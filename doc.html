@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>XUI Mobile</title>
-    <script src="./dist/xui.js"></script>
     <meta name="format-detection" content="telephone=no,email=no"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-mobile-web-app-status-bar-style" content="white"/>
@@ -12,27 +11,36 @@
     <link rel="stylesheet" href="static/css/base.css"/>
     <link rel="stylesheet" href="static/theme/default.css"/>
     <style>
-        .components{display: -webkit-flex;display: flex;display: -webkit-box;-webkit-flex-direction: column;flex-direction: column;-webkit-box-orient: horizontal;}
-        .components .sidebar{-webkit-flex:1;flex: 1;-webkit-box-flex: 1;}
-        .components .doc-content{-webkit-flex:3;flex: 3;-webkit-box-flex: 3;}
-        .components .device{width:320px;height:544px;background: url("./static/image/device.png") no-repeat top left;-webkit-background-size: cover;background-size: cover;padding: 55px 12px 20px 0;}
+        dt,dd{line-height:1.6}
+        .components .sidebar{position:fixed;top:0;bottom:0;left:0;overflow-y:auto;width:180px;background:rgba(255,255,255,.1);-webkit-overflow-scrolling:touch}
+        .components .sidebar dl dd{padding-left:1rem}
+        .components .doc-content{margin:0 330px 0 200px}
+        .components .device-content{position:fixed;top:50%;right:10px;padding:55px 12px 20px 2px;width:320px;height:544px;background:url("./static/image/device.png") no-repeat top left;background-size:cover;-webkit-transform:translateY(-50%);transform:translateY(-50%);-webkit-background-size:cover;-webkit-animation:fadeInRight .5s ease-out}
+        .components .device-content iframe{width: 100%;height: 100%;}
+        @media (max-width:750px){.components .doc-content{display:none}.components .device-content{padding:40px 10px 16px 2px;width:240px;height:408px;-webkit-transition:.3s;transition:.3s}}
+        @media (max-width:540px){.components .sidebar{width:140px}}
+        @media (max-width:440px){.components .device-content{display:none}.components .doc-content{display:block;margin:0 0 0 150px}}
+        @-webkit-keyframes fadeInRight{from{opacity:0;-webkit-transform:translateX(80%) translateY(-50%);transform:translateX(80%) translateY(-50%)}to{opacity:1;-webkit-transform:translateX(0) translateY(-50%);transform:translateX(0) translateY(-50%)}}
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="components">
-            <div class="sidebar">
-                <ul>
-                    <li><a href="#picker">picker</a></li>
-                </ul>
-            </div>
-            <div class="doc-content">
-                <article class="component">
-                    <h2>Picker</h2>
-                    <p>类似select的选择组件，ios风格</p>
-                </article>
-            </div>
-            <div class="device">aaa</div>
+    <header>
+        <h2 class="tc">XUI Mobile</h2>
+    </header>
+    <div class="components">
+        <div class="sidebar">
+            <dl>
+                <dd><a href="#picker">picker</a></dd>
+            </dl>
+        </div>
+        <div class="doc-content">
+            <article class="component">
+                <h2>Picker</h2>
+                <p>类似select的选择组件，ios风格</p>
+            </article>
+        </div>
+        <div class="device-content">
+            <iframe src="examples/date-picker.html" frameborder="0"></iframe>
         </div>
     </div>
 </body>
