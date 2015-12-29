@@ -1,0 +1,39 @@
+/*sublime配色风格*/
+/* ======= ui规范 ======= */
+/*1.font*/
+.font-xl{font-size:2rem;}
+.font-lg{font-size:1.6rem;}
+.font-md{font-size:1.4rem}
+.font-sm{font-size:1.2rem}
+.font-xs{font-size:1rem}
+
+/*2.color*/
+.red{color: #F92672;}
+.orange{color: #FD971F;}
+.yellow{color: #E6DB5A;}
+.green{color: #A6E22E;}
+.blue{color: #66D9EF;}
+.purple{color: #AE81DD;}
+.gray{color: #75715E;}
+
+/*3.background-color*/
+.bg-red{color: #F92672;}
+.bg-orange{color: #FD971F;}
+.bg-yellow{color: #E6DB5A;}
+.bg-green{color: #A6E22E;}
+.bg-blue{color: #66D9EF;}
+.bg-purple{color: #AE81DD;}
+.bg-gray{color: #75715E;}
+
+/*common*/
+*{-webkit-box-sizing: border-box;box-sizing: border-box;}
+body{background: #293a46;color: #fff;font: 14px/1.444 'Consolas', 'microsoft yahei';}
+a{color: #66D9EF;text-decoration: none;}
+a:active,a:hover,a:focus,a:visited{text-decoration: underline}
+ul,ol{list-style: none;margin: 0;padding: 0;}
+dl,dd{margin: 0;}
+
+
+/*layout*/
+.container{max-width: 1200px;margin: 0 auto;padding: 0 10px;}
+

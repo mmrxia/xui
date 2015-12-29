@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XUI Mobile</title>
+    <script src="./dist/xui.js"></script>
+    <meta name="format-detection" content="telephone=no,email=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-status-bar-style" content="white"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="static/css/base.css"/>
+    <link rel="stylesheet" href="static/theme/default.css"/>
+    <style>
+        .components{display: -webkit-flex;display: flex;display: -webkit-box;-webkit-flex-direction: column;flex-direction: column;-webkit-box-orient: horizontal;}
+        .components .sidebar{-webkit-flex:1;flex: 1;-webkit-box-flex: 1;}
+        .components .doc-content{-webkit-flex:3;flex: 3;-webkit-box-flex: 3;}
+        .components .device{width:320px;height:544px;background: url("./static/image/device.png") no-repeat top left;-webkit-background-size: cover;background-size: cover;padding: 55px 12px 20px 0;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="components">
+            <div class="sidebar">
+                <ul>
+                    <li><a href="#picker">picker</a></li>
+                </ul>
+            </div>
+            <div class="doc-content">
+                <article class="component">
+                    <h2>Picker</h2>
+                    <p>类似select的选择组件，ios风格</p>
+                </article>
+            </div>
+            <div class="device">aaa</div>
+        </div>
+    </div>
+</body>
+</html>
