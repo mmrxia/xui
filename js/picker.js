@@ -2,7 +2,43 @@
  * picker.js
  * ios风格多列选择功能组件，如日期、通讯录、省市区等
  * */
+;(function ($) {
+    'use strict';
 
+    var Picker = function (options) {
+
+        var defaults = {
+
+        };
+        var params = $.extend({},defaults,options);
+
+    };
+
+
+    $.fn.picker = function(options) {
+        var args = arguments;
+        return this.each(function() {
+            if(!this) return;
+            var $this = $(this);
+
+            var picker = $this.data("picker");
+            if(!picker) {
+                var params = $.extend({
+                    input: this,
+                    value: $this.val() ? $this.val().split(' ') : ''
+                }, options);
+                picker = new Picker(params);
+                $this.data("picker", picker);
+            }
+            if(typeof options === 'string') {
+                picker[options].apply(picker, Array.prototype.slice.call(args, 1));
+            }
+        });
+    };
+})(Zepto);
+
+
+/*datetimePicker*/
 ;
 (function ($) {
     "use strict";
@@ -93,9 +129,9 @@
         return this.each(function () {
             if (!this) return;
             var params = $.extend({}, defaults, options);
-            console.log(JSON.stringify(params))
+            //console.log(JSON.stringify(params))
             if (options.value) $(this).val(M.formatDate(params.value, params.format));
-            //$(this).picker(params);
+            $(this).picker(params);
         });
     };
 
