@@ -2,27 +2,36 @@
  * picker.js
  * ios风格多列选择功能组件，如日期、通讯录、省市区等
  * */
-;(function ($) {
+;
+(function ($) {
     'use strict';
 
     var Picker = function (options) {
 
         var defaults = {
-
+            inputReadOnly: true,
+            toolbar: true,
+            toolbarCloseText: '确定',
+            toolbarTemplate: [
+                '<header class="bar bar-nav">',
+                '<button class="button button-link pull-right close-picker">确定</button>',
+                '<h1 class="title">请选择</h1>',
+                '</header>'
+            ].join('')
         };
-        var params = $.extend({},defaults,options);
+        var params = $.extend({}, defaults, options);
 
     };
 
 
-    $.fn.picker = function(options) {
+    $.fn.picker = function (options) {
         var args = arguments;
-        return this.each(function() {
-            if(!this) return;
+        return this.each(function () {
+            if (!this) return;
             var $this = $(this);
 
             var picker = $this.data("picker");
-            if(!picker) {
+            if (!picker) {
                 var params = $.extend({
                     input: this,
                     value: $this.val() ? $this.val().split(' ') : ''
@@ -30,7 +39,7 @@
                 picker = new Picker(params);
                 $this.data("picker", picker);
             }
-            if(typeof options === 'string') {
+            if (typeof options === 'string') {
                 picker[options].apply(picker, Array.prototype.slice.call(args, 1));
             }
         });
@@ -48,7 +57,7 @@
         formatNum: function (val) {
             return (val && val < 10) ? '0' + val : '' + val;
         },
-        makeArr: function (max,min) {
+        makeArr: function (max, min) {
             var arr = [];
             for (var i = min || 1; i <= max; i++) {
                 arr.push(M.formatNum(i));
@@ -91,8 +100,8 @@
         value: [],  //默认值，如：['2015', '12', '29', '19', '15']
         yearLimit: [1950, 2030], //年份范围
         onChange: function (picker) {
-            var days = M.getDaysByYearAndMonth(picker[0],picker[1]);
-            if(picker[2] > days.length)  picker[2] = days.length;
+            var days = M.getDaysByYearAndMonth(picker[0], picker[1]);
+            if (picker[2] > days.length)  picker[2] = days.length;
         }
     };
     /*需要显示的列数*/
