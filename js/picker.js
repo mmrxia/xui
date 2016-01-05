@@ -21,6 +21,20 @@
         };
         var params = $.extend({}, defaults, options);
 
+        function updateDuringScroll(){
+
+        }
+
+        function handleTouchStart(e){
+
+        }
+        function handleTouchMove(e){
+
+        }
+        function handleTouchEnd(e){
+
+        }
+
     };
 
 
