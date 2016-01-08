@@ -7,7 +7,7 @@
     'use strict';
 
     var Picker = function (options) {
-        var self = this;
+        var self = this, elements = {};
         var defaults = {
             cols: [], //列
             inputReadOnly: true, //input是否只读
@@ -21,30 +21,74 @@
             ].join('')
         };
 
+        /*参数*/
         self.params = $.extend({}, defaults, options);
+        self.initialized = false; //初始化过
+
+        /*页面元素*/
+        elements.modal = $('.picker-modal');
+        elements.input = $(self.params.input);
+        console.log(self.params)
+
+        /*method*/
+        self.init = function () {
+            self.layout();
+        };
+
+        /*关闭模态框*/
+        self.close = function () {
+            elements.modal.addClass('modal-out').removeClass('modal-in');
+        };
+
+        /*设置布局，选项等*/
+        self.layout = function () {
+            self.initialized = true;
+            self.setCols();
+        };
+
+        self.setCols = function () {
+
+        };
+
+        /*打开模态框*/
+        self.open = function () {
+            elements.modal.addClass('modal-in').removeClass('modal-out');
+        };
 
         /*update scroll position*/
-        function updateDuringScroll(){
+        function fnUpdateDuringScroll(){
 
         }
 
         /*touch satrt*/
-        function handleTouchStart(e){
+        function fnTouchStart(e){
 
         }
 
         /*touch move*/
-        function handleTouchMove(e){
+        function fnTouchMove(e){
 
         }
 
         /*touch end*/
-        function handleTouchEnd(e){
+        function fnTouchEnd(e){
 
         }
 
-        $(document.body).on('click','.close-picker', function () {
+        /*fun: fnOnHtmlClick*/
+        function fnOnHtmlClick(e){
+            if(elements.modal[0]){
+                if(e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) self.close();
+            }
+        }
 
+        /*bind events*/
+        $(document.body).on('click','.close-picker', function () {
+            self.close();
+        }).on('click',fnOnHtmlClick);
+
+        elements.input.on('focus', function () {
+            self.open();
         });
 
     };
