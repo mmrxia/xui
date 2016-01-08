@@ -687,7 +687,7 @@
                     value: $this.val() ? $this.val().split(' ') : ''
                 }, params);
                 picker = new Picker(p);
-                $this.data("picker", picker);
+                //$this.data("picker", picker);
             }
             if(typeof params === typeof "a") {
                 picker[params].apply(picker, Array.prototype.slice.call(args, 1));

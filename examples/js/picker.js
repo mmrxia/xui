@@ -7,11 +7,12 @@
     'use strict';
 
     var Picker = function (options) {
-
+        var self = this;
         var defaults = {
-            inputReadOnly: true,
+            cols: [], //列
+            inputReadOnly: true, //input是否只读
             toolbar: true,
-            toolbarCloseText: '确定',
+            toolbarCloseText: '确定',  //关闭按钮文案
             toolbarTemplate: [
                 '<header class="bar bar-nav">',
                 '<button class="button button-link pull-right close-picker">确定</button>',
@@ -19,21 +20,32 @@
                 '</header>'
             ].join('')
         };
-        var params = $.extend({}, defaults, options);
 
+        self.params = $.extend({}, defaults, options);
+
+        /*update scroll position*/
         function updateDuringScroll(){
 
         }
 
+        /*touch satrt*/
         function handleTouchStart(e){
 
         }
+
+        /*touch move*/
         function handleTouchMove(e){
 
         }
+
+        /*touch end*/
         function handleTouchEnd(e){
 
         }
+
+        $(document.body).on('click','.close-picker', function () {
+
+        });
 
     };
 
