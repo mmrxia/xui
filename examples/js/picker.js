@@ -7,11 +7,12 @@
     'use strict';
 
     var Picker = function (options) {
-
+        var self = this, elements = {};
         var defaults = {
-            inputReadOnly: true,
+            cols: [], //列
+            inputReadOnly: true, //input是否只读
             toolbar: true,
-            toolbarCloseText: '确定',
+            toolbarCloseText: '确定',  //关闭按钮文案
             toolbarTemplate: [
                 '<header class="bar bar-nav">',
                 '<button class="button button-link pull-right close-picker">确定</button>',
@@ -19,21 +20,76 @@
                 '</header>'
             ].join('')
         };
-        var params = $.extend({}, defaults, options);
 
-        function updateDuringScroll(){
+        /*参数*/
+        self.params = $.extend({}, defaults, options);
+        self.initialized = false; //初始化过
+
+        /*页面元素*/
+        elements.modal = $('.picker-modal');
+        elements.input = $(self.params.input);
+        console.log(self.params)
+
+        /*method*/
+        self.init = function () {
+            self.layout();
+        };
+
+        /*关闭模态框*/
+        self.close = function () {
+            elements.modal.addClass('modal-out').removeClass('modal-in');
+        };
+
+        /*设置布局，选项等*/
+        self.layout = function () {
+            self.initialized = true;
+            self.setCols();
+        };
+
+        self.setCols = function () {
+
+        };
+
+        /*打开模态框*/
+        self.open = function () {
+            elements.modal.addClass('modal-in').removeClass('modal-out');
+        };
+
+        /*update scroll position*/
+        function fnUpdateDuringScroll(){
 
         }
 
-        function handleTouchStart(e){
+        /*touch satrt*/
+        function fnTouchStart(e){
 
         }
-        function handleTouchMove(e){
+
+        /*touch move*/
+        function fnTouchMove(e){
 
         }
-        function handleTouchEnd(e){
+
+        /*touch end*/
+        function fnTouchEnd(e){
 
         }
+
+        /*fun: fnOnHtmlClick*/
+        function fnOnHtmlClick(e){
+            if(elements.modal[0]){
+                if(e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) self.close();
+            }
+        }
+
+        /*bind events*/
+        $(document.body).on('click','.close-picker', function () {
+            self.close();
+        }).on('click',fnOnHtmlClick);
+
+        elements.input.on('focus', function () {
+            self.open();
+        });
 
     };
 

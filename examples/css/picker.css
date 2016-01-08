@@ -1,0 +1,28 @@
+/*picker modal
+* 总高为216px，标题为36px，选项为180px
+* 选项列显示5列
+*/
+.picker-modal{position:fixed;bottom:0;left:0;z-index:9999;display:none;width:100%;height:216px;background:#cfd5da;-webkit-transform:translate3d(0,100%,0);transform:translate3d(0,100%,0);}
+.picker-modal.modal-in,.picker-modal.modal-out{-webkit-transition-duration:400ms;transition-duration:400ms}
+
+/*modal入场*/
+.picker-modal.modal-in{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}
+/*modal退场*/
+.picker-modal.modal-out{-webkit-transform:translate3d(0,100%,0);transform:translate3d(0,100%,0)}
+
+/*标题*/
+.picker-modal .tool-bar{height:36px;-webkit-flex-shrink:0;flex-shrink:0}
+.picker-modal .title{margin:0;padding:0;background-color:#f2f2f2;color:#3d4145;text-align:center;white-space:nowrap;font-weight:500;font-size:14px;line-height:36px}
+.picker-modal .tool-bar .close-picker{position:absolute;top:0;right:0;padding:0 15px;height:auto;outline:0;border:0;background-color:#f2f2f2;color:#0894ec;font-size:12px;line-height:36px;cursor:pointer}
+
+/*inner items*/
+.picker-items{position:relative;height: 180px;display:-webkit-box;display:-webkit-flex;display:flex;padding:0;text-align:right;font-size:20px;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-mask-box-image:-webkit-linear-gradient(bottom,transparent,transparent 5%,#fff 20%,#fff 80%,transparent 95%,transparent);-webkit-mask-box-image:linear-gradient(to top,transparent,transparent 5%,#fff 20%,#fff 80%,transparent 95%,transparent)}
+
+/*列*/
+.picker-items-col{position:relative;overflow: hidden;max-height: 100%;}
+.picker-items-col-wrapper{-webkit-transition:300ms ease-out;transition:300ms ease-out;}
+
+/*选项*/
+.picker-item{position:relative;top:0;left:0;overflow:hidden;box-sizing:border-box;padding:0 10px;width:100%;height:36px;color:#999;text-overflow:ellipsis;white-space:nowrap;line-height:36px;}
+.picker-item.picker-selected{color:#333}
+.picker-center-highlight{position:absolute;top:50%;left:0;margin-top:-18px;width:100%;height:36px}
