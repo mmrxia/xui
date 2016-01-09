@@ -10,39 +10,61 @@
     <meta name="format-detection" content="telephone=no"/>
     <link rel="stylesheet" href="static/css/base.css"/>
     <link rel="stylesheet" href="static/theme/default.css"/>
+    <link rel="stylesheet" href="static/css/prism.css"/>
     <style>
         dt,dd{line-height:1.6}
-        .components .sidebar{position:fixed;top:0;bottom:0;left:0;overflow-y:auto;width:180px;background:rgba(255,255,255,.1);-webkit-overflow-scrolling:touch}
-        .components .sidebar dl{padding: 1rem 0;}
-        .components .sidebar dl dd{padding-left:1rem}
-        .components .doc-content{margin:0 330px 0 200px}
+        .sidebar{position:fixed;top:0;bottom:0;left:0;overflow-y:auto;width:180px;background:#272822;-webkit-overflow-scrolling:touch}
+        .sidebar .logo{height: 50px;line-height: 50px;text-align: center;font-size: 32px;}
+        .sidebar dl{padding: 1rem 0;counter-reset: nav;}
+        .sidebar dl dd{padding-left:1rem;}
+        .sidebar dl dd:before{content:counter(nav) '.';counter-increment: nav;}
+        .components header {margin-left: 180px;}
+        .components header h2{padding: 10px 0;background: #272822;border-bottom: 1px solid transparent;}
+        .components .doc-content{margin:0 340px 0 200px;}
+        .components .doc-content .component h2{color: #66D9EF;}
+        .components .doc-content .code pre{border: 1px solid #2F9DC2;display: block}
         .components .device-content{position:fixed;top:50%;right:10px;padding:55px 12px 20px 2px;width:320px;height:544px;background:url("./static/image/device.png") no-repeat top left;background-size:cover;-webkit-transform:translateY(-50%);transform:translateY(-50%);-webkit-background-size:cover;-webkit-animation:fadeInRight .5s ease-out}
         .components .device-content iframe{width: 100%;height: 100%;}
         @media (max-width:750px){.components .doc-content{display:none}.components .device-content{padding:40px 10px 16px 2px;width:240px;height:408px;-webkit-transition:.3s;transition:.3s}}
-        @media (max-width:540px){.components .sidebar{width:140px}}
+        @media (max-width:540px){.sidebar{width:140px}.components header {margin-left: 140px;}}
         @media (max-width:440px){.components .device-content{display:none}.components .doc-content{display:block;margin:0 0 0 150px}}
         @-webkit-keyframes fadeInRight{from{opacity:0;-webkit-transform:translateX(80%) translateY(-50%);transform:translateX(80%) translateY(-50%)}to{opacity:1;-webkit-transform:translateX(0) translateY(-50%);transform:translateX(0) translateY(-50%)}}
     </style>
 </head>
 <body>
-    <header>
-        <h2 class="tc">XUI Mobile</h2>
-    </header>
+    <div class="sidebar">
+        <div class="logo"><span class="red">X</span><span class="green">U</span><span class="blue">I</span></div>
+        <dl>
+            <dd><a href="#picker">picker</a></dd>
+        </dl>
+    </div>
     <div class="components">
-        <div class="sidebar">
-            <dl>
-                <dd><a href="#picker">picker</a></dd>
-            </dl>
-        </div>
+        <header>
+            <h2 class="tc">XUI Mobile</h2>
+        </header>
         <div class="doc-content">
             <article class="component" id="picker">
                 <h2>Picker</h2>
-                <p>类似select的选择组件，ios风格</p>
+                <div class="description">
+                    <p>类似select的选择组件，ios风格</p>
+                </div>
+                <div class="code">
+                    <pre><code class="language-html">#HTML:
+&lt;!--日期输入目标容器--&gt;
+&lt;input type="text" placeholder="" id='datetime-picker' /&gt;</code></pre>
+                    <pre><code class="language-javascript">#JS:
+&lt;script&gt;
+    $("#datetime-picker").datetimePicker({
+        value: ['2015', '12', '29', '19', '15']
+    });
+&lt;/script&gt;</code></pre>
+                </div>
             </article>
         </div>
         <div class="device-content">
             <iframe src="examples/date-picker.html" frameborder="0"></iframe>
         </div>
     </div>
+    <script src="static/js/prism.js"></script>
 </body>
 </html>
