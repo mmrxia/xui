@@ -32,6 +32,7 @@ a{color: #66D9EF;text-decoration: none;}
 a:active,a:hover,a:focus,a:visited{text-decoration: underline}
 ul,ol{list-style: none;margin: 0;padding: 0;}
 dl,dd{margin: 0;}
+h1,h2,h3,h4,h5,h6{margin: 0}
 
 
 /*layout*/
