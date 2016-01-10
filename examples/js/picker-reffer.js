@@ -1,6 +1,6 @@
 /*
 * picker.js
-* ios·ç¸ñ¶àÁĞÑ¡Ôñ¹¦ÄÜ×é¼ş£¬ÈçÈÕÆÚ¡¢Í¨Ñ¶Â¼¡¢Ê¡ÊĞÇøµÈ
+* iosé£æ ¼å¤šåˆ—é€‰æ‹©åŠŸèƒ½ç»„ä»¶ï¼Œå¦‚æ—¥æœŸã€é€šè®¯å½•ã€çœå¸‚åŒºç­‰
 * */
 
 /*===========================
@@ -131,10 +131,10 @@
             scrollToInput: true,
             inputReadOnly: true,
             toolbar: true,
-            toolbarCloseText: 'È·¶¨',
+            toolbarCloseText: 'ç¡®å®š',
             toolbarTemplate: '<header class="bar bar-nav">\
-                <button class="button button-link pull-right close-picker">È·¶¨</button>\
-                <h1 class="title">ÇëÑ¡Ôñ</h1>\
+                <button class="button button-link pull-right close-picker">ç¡®å®š</button>\
+                <h1 class="title">è¯·é€‰æ‹©</h1>\
                 </header>',
         };
         params = params || {};
@@ -290,7 +290,7 @@
                  var prevItems = selectedItem.prevAll().addClass('picker-before-selected');
                  var nextItems = selectedItem.nextAll().addClass('picker-after-selected');
                  */
-                //È¥µô .picker-after-selected, .picker-before-selected ÒÔÌá¸ßĞÔÄÜ
+                //å»æ‰ .picker-after-selected, .picker-before-selected ä»¥æé«˜æ€§èƒ½
                 col.wrapper.find('.picker-selected').removeClass('picker-selected');
                 if (p.params.rotateEffect) {
                     col.items.transition(transition);
@@ -532,7 +532,7 @@
         // Input Events
         function openOnInput(e) {
             e.preventDefault();
-            // °²×¿Î¢ĞÅwebviewreadonlyµÄinputÒÀÈ»µ¯³öÈí¼üÅÌÎÊÌâĞŞ¸´
+            // å®‰å“å¾®ä¿¡webviewreadonlyçš„inputä¾ç„¶å¼¹å‡ºè½¯é”®ç›˜é—®é¢˜ä¿®å¤
             if ($.device.isWeixin && $.device.android && p.params.inputReadOnly) {
                 /*jshint validthis:true */
                 this.focus();
@@ -729,7 +729,7 @@
 
     var defaults = {
 
-        rotateEffect: false,  //ÎªÁËĞÔÄÜ
+        rotateEffect: false,  //ä¸ºäº†æ€§èƒ½
 
         value: [today.getFullYear(), formatNumber(today.getMonth()+1), formatNumber(today.getDate()), today.getHours(), formatNumber(today.getMinutes())],
 

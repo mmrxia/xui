@@ -19,10 +19,10 @@
 .picker-items{position:relative;height: 180px;display:-webkit-box;display:-webkit-flex;display:flex;padding:0;text-align:right;font-size:20px;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-mask-box-image:-webkit-linear-gradient(bottom,transparent,transparent 5%,#fff 20%,#fff 80%,transparent 95%,transparent);-webkit-mask-box-image:linear-gradient(to top,transparent,transparent 5%,#fff 20%,#fff 80%,transparent 95%,transparent)}
 
 /*ÁÐ*/
-.picker-items-col{position:relative;overflow: hidden;max-height: 100%;}
-.picker-items-col-wrapper{-webkit-transition:300ms ease-out;transition:300ms ease-out;-webkit-transform: translate3d(0,-100px,0);transform: translate3d(0,100,0);}
+.picker-items-col{position:relative;overflow: hidden;max-height: 100%;cursor: pointer;}
+.picker-items-col-wrapper{-webkit-transition:300ms ease-out;transition:300ms ease-out;}
 
 /*Ñ¡Ïî*/
 .picker-item{position:relative;top:0;left:0;overflow:hidden;box-sizing:border-box;padding:0 10px;width:100%;height:36px;color:#999;text-overflow:ellipsis;white-space:nowrap;line-height:36px;}
 .picker-item.picker-selected{color:#333}
-.picker-center-highlight{position:absolute;top:50%;left:0;margin-top:-18px;width:100%;height:36px}
+.picker-center-highlight{position:absolute;top:50%;left:0;margin-top:-18px;width:100%;height:36px;background: #ddd}

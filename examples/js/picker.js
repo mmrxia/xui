@@ -63,6 +63,7 @@ charset = 'utf-8';
             self.setItems();
         };
 
+        /*设置列元素，写入dom*/
         self.setItems = function () {
             if (self.params.cols.length) {
                 var arr = ['<div class="picker-center-highlight"></div>'];
@@ -78,19 +79,23 @@ charset = 'utf-8';
 
         };
 
+        /*初始化列表*/
         self.initCols = function () {
             $.each(elements.container.find('.picker-items-col'), function () {
                 var col = $(this), colIndex = col.index();
+                //console.log(colIndex)
 
                 col.wrapper = col.find('.picker-items-col-wrapper');
                 col.items = col.find('.picker-item');
 
+                /*处理绑定事件*/
+                col.handleEvents = function(action){
+                    col[action](self.events.start, fnTouchStart);
+                    col[action](self.events.move, fnTouchMove);
+                    col[action](self.events.end, fnTouchEnd);
+                };
 
-                /*绑定事件*/
-                col.on(self.events.start, fnTouchStart);
-                col.on(self.events.move, fnTouchMove);
-                col.on(self.events.end, fnTouchEnd);
-
+                col.handleEvents('on');
 
 
                 /*
@@ -101,13 +106,18 @@ charset = 'utf-8';
                  * */
                 var isTouched, isMoved, startY, currentY, movedY,startTranslate,currentTranslate;
                 var minTranslate,maxTranslate;
+                var colHeight = col[0].offsetHeight;     //col容器高度
+                var itemHeight = col.items[0].offsetHeight;     //item高度
+                var itemsHeight = itemHeight * col.items.length;
+
+
                 /*touch satrt*/
                 function fnTouchStart(e) {
                     if (isMoved || isTouched) return false;
                     e.preventDefault();
                     isTouched = true;
                     startY = e.type === 'touchstart' ? e.targetTouches[0].pageY : e.pageY;
-                    console.log('startY',startY)
+                    console.log('startY',startY);
                     startTranslate = fnGetTranslate(col.wrapper[0], 'y');
                     console.log('startTranslate',typeof startTranslate, startTranslate)
                 }
@@ -123,7 +133,7 @@ charset = 'utf-8';
 
                     currentTranslate = startTranslate + movedY;
 
-                    console.log('currentTranslate',currentTranslate)
+                    //console.log('currentTranslate',currentTranslate);
 
                     //滑动
                     fnTranslate(col.wrapper,currentTranslate,200);
@@ -133,6 +143,11 @@ charset = 'utf-8';
                 /*touch end*/
                 function fnTouchEnd(e) {
                     isTouched = isMoved = false;
+
+                    //定位选项
+                    currentTranslate = Math.round(currentTranslate/itemHeight) * itemHeight;
+                    //滑动
+                    fnTranslate(col.wrapper,currentTranslate,200);
                 }
 
             });
@@ -151,8 +166,9 @@ charset = 'utf-8';
 
 
         /*
-         * Function fnTransition
-         * 过渡
+         * Function 过渡
+         * @param ele 目标元素
+         * @param duration 过渡执行时间
          * */
         function fnTransition(ele, duration) {
             var _style = 'all ' + (duration || 0) + 'ms linear';
@@ -163,8 +179,10 @@ charset = 'utf-8';
         }
 
         /*
-         * Function fnTranslate
-         * 偏移
+         * Function 偏移
+         * @param ele 目标元素
+         * @param offset 偏移量
+         * @param duration 过渡执行时间
          * */
         function fnTranslate(ele, offset, duration) {
             var _style = 'translate3d(0,' + (offset || 0) + 'px,0)';
@@ -178,9 +196,11 @@ charset = 'utf-8';
 
         /*
         * 获取偏移量
+        * @param ele 目标元素
+        * @param axis 轴（x/y）
         * */
-        function fnGetTranslate(ele, direction){
-            if(typeof direction === 'undefined') direction = 'x';
+        function fnGetTranslate(ele, axis){
+            if(typeof axis === 'undefined') axis = 'x';
 
             var currTransform, curStyle = window.getComputedStyle(ele, null); //不同的浏览器估计会有不同的处理方式,此处留坑。。。
             /*
@@ -194,9 +214,9 @@ charset = 'utf-8';
             console.log('transformMatrix',transformMatrix);
 
             var matrixArr = transformMatrix.split(',')
-            if(direction === 'x'){
+            if(axis === 'x'){
                 currTransform = matrixArr.length === 16 ? matrixArr[12] : matrixArr[4]
-            }else if(direction === 'y'){
+            }else if(axis === 'y'){
                 currTransform = matrixArr.length === 16 ? matrixArr[13] : matrixArr[5]
             }
 
@@ -208,6 +228,7 @@ charset = 'utf-8';
         /*fun: fnOnHtmlClick*/
         function fnOnHtmlClick(e) {
             if (elements.modal[0]) {
+                console.log(e.target)
                 if (e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) self.close();
             }
         }
