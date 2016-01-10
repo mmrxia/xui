@@ -65,9 +65,11 @@ charset = 'utf-8';
 
         /*设置列元素，写入dom*/
         self.setItems = function () {
+            var colsLen = self.params.value.length;    //初始值数组长度
             if (self.params.cols.length) {
                 var arr = ['<div class="picker-center-highlight"></div>'];
                 $.each(self.params.cols, function (i, v) {
+                    if(colsLen && i > colsLen - 1) return false;      //按照初始值设置列
                     arr.push('<div class="picker-items-col"><div class="picker-items-col-wrapper">');
                     $.each(v.values, function (m, n) {
                         arr.push('<div class="picker-item">' + n + '</div>');
@@ -105,10 +107,24 @@ charset = 'utf-8';
                  * changedTouches是涉及当前事件的触摸点的列表。
                  * */
                 var isTouched, isMoved, startY, currentY, movedY,startTranslate,currentTranslate;
+                var colHeight,itemsHeight,itemHeight;
                 var minTranslate,maxTranslate;
-                var colHeight = col[0].offsetHeight;     //col容器高度
-                var itemHeight = col.items[0].offsetHeight;     //item高度
-                var itemsHeight = itemHeight * col.items.length;
+
+                colHeight = col[0].offsetHeight;     //col容器高度
+                itemHeight = col.items[0].offsetHeight;     //item高度
+                itemsHeight = itemHeight * col.items.length;
+
+                minTranslate = colHeight / 2 + itemHeight / 2 - itemsHeight;  //向上拖动最大偏移量
+                maxTranslate = colHeight / 2 - itemHeight / 2;  //向下拖动最大偏移量
+
+
+                /*选项高亮*/
+                col.updateItems = function (index) {
+                    if (index < 0) index = 0;
+                    if (index >= col.items.length) index = col.items.length - 1;
+
+                    col.items.eq(index).addClass('picker-selected').siblings().removeClass('picker-selected');
+                };
 
 
                 /*touch satrt*/
@@ -131,27 +147,41 @@ charset = 'utf-8';
                     currentY = e.type === 'touchmove' ? e.targetTouches[0].pageY : e.pageY;
                     movedY = currentY - startY;
 
+                    //偏移量
                     currentTranslate = startTranslate + movedY;
-
                     //console.log('currentTranslate',currentTranslate);
+                    if(currentTranslate > maxTranslate) currentTranslate = maxTranslate + itemHeight/2; //向下拉取范围
+                    if(currentTranslate < minTranslate) currentTranslate = minTranslate - itemHeight/2; //向上拉取范围
 
                     //滑动
                     fnTranslate(col.wrapper,currentTranslate,200);
+                    var activeIndex =  -Math.round((currentTranslate - maxTranslate)/itemHeight);
+                    col.updateItems(activeIndex);
 
                 }
 
                 /*touch end*/
                 function fnTouchEnd(e) {
+                    console.log('fnTouchEnd')
                     isTouched = isMoved = false;
 
-                    //定位选项
-                    currentTranslate = Math.round(currentTranslate/itemHeight) * itemHeight;
+                    //偏移量
+                    currentTranslate = Math.round(currentTranslate/itemHeight) * itemHeight; //四舍五入
+                    if(currentTranslate > maxTranslate) currentTranslate = maxTranslate; //向下拉取范围
+                    if(currentTranslate < minTranslate) currentTranslate = minTranslate; //向上拉取范围
+
                     //滑动
                     fnTranslate(col.wrapper,currentTranslate,200);
+
+                    //activeIndex 定位选项
+                    var activeIndex = -Math.floor((currentTranslate - maxTranslate)/itemHeight); //向下取整
+                    col.updateItems(activeIndex);
                 }
 
             });
         };
+
+
 
         /*打开模态框*/
         self.open = function () {
@@ -211,7 +241,7 @@ charset = 'utf-8';
             * 得到矩阵字符串 matrix(1, 0, 0, 1, 0, -100)
             * */
             var transformMatrix = curStyle.transform === 'none' ? '' : curStyle.transform;
-            console.log('transformMatrix',transformMatrix);
+            //console.log('transformMatrix',transformMatrix);
 
             var matrixArr = transformMatrix.split(',')
             if(axis === 'x'){
@@ -228,7 +258,6 @@ charset = 'utf-8';
         /*fun: fnOnHtmlClick*/
         function fnOnHtmlClick(e) {
             if (elements.modal[0]) {
-                console.log(e.target)
                 if (e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) self.close();
             }
         }
@@ -238,7 +267,7 @@ charset = 'utf-8';
             self.close();
         }).on('click', fnOnHtmlClick);
 
-        elements.input.on('focus', function () {
+        elements.input.on('focus click', function () {
             self.open();
         });
 
