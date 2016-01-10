@@ -90,8 +90,8 @@ charset = 'utf-8';
         self.initCols = function () {
             self.cols = elements.container.find('.picker-items-col');
             $.each(self.cols, function () {
-                var col = $(this), colIndex = col.index();
-                //console.log(colIndex)
+                var col = $(this), colIndex = self.cols.index(col);
+                console.log(colIndex)
 
                 col.wrapper = col.find('.picker-items-col-wrapper');
                 col.items = col.find('.picker-item');
@@ -132,8 +132,8 @@ charset = 'utf-8';
                     if (index < 0) index = 0;
                     if (index >= col.items.length) index = col.items.length - 1;
                     col.items.eq(index).addClass('picker-selected').siblings().removeClass('picker-selected');
-                    col.data('val',col.items.eq(index).data('val')); //该列要显示的值
 
+                    self.params.cols[colIndex].value = col.items.eq(index).data('val'); //存储该列要显示的值
 
                     if(col.activeIndex != index){
                         col.activeIndex = index;
@@ -144,15 +144,20 @@ charset = 'utf-8';
 
                 /*input赋值*/
                 col.setValue = function () {
-                    console.log(col.displayValue)
                     var params = {
                         value: []
                     };
-                    $.each(self.cols, function (i, v) {
-                        var _this = $(this);
-                        console.log(_this.data('val'))
-                        params.value.push(_this.data('val') || self.params.value[i]);
+                    $.each(self.params.cols, function (i, v) {
+                        self.params.cols[i].value = v.value || self.params.value[i];
+                        params.value.push(v.value || self.params.value[i]);
                     });
+
+                    if (self.params.onChange) {
+                        //变更值，联动处理
+                        self.params.onChange(self.params);
+
+                        console.log(JSON.stringify(self.params.cols))
+                    }
                     elements.input.val(self.params.formatValue ? self.params.formatValue(params) : params.value.join(' '));
                 };
 
@@ -368,8 +373,11 @@ charset = 'utf-8';
         value: [],  //默认值，如：['2015', '12', '29', '19', '15']
         yearLimit: [1950, 2030], //年份范围
         onChange: function (picker) {
-            var days = M.getDaysByYearAndMonth(picker[0], picker[1]);
-            if (picker[2] > days.length)  picker[2] = days.length;
+            var days = M.getDaysByYearAndMonth(picker.cols[0].value, picker.cols[1].value);
+            var currentValue = picker.cols[2].value;
+            //console.log(picker.cols[0].value, picker.cols[1].value, days.length)
+            if(currentValue > days.length) currentValue = days.length; //日
+            picker.cols[2].value = currentValue;
         },
         formatValue: function (params) {
             return M.formatDate(params.value, params.format || defaults.format);
