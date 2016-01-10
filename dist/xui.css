@@ -47,6 +47,9 @@ td,th{padding:0}
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     -webkit-touch-callout: none;
 }
+html{
+    -webkit-tap-highlight-color: transparent;
+}
 body {
     position: absolute;
     top: 0;
@@ -59,6 +62,7 @@ body {
     color: #3d4145;
     background: #eeeeee;
     overflow: hidden;
+    -webkit-user-select:none;user-select:none;
 }
 a,
 input,
