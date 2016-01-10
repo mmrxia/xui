@@ -52,6 +52,11 @@ charset = 'utf-8';
             self.initCols();
         };
 
+        /*打开模态框*/
+        self.open = function () {
+            elements.modal.addClass('modal-in').removeClass('modal-out');
+        };
+
         /*关闭模态框*/
         self.close = function () {
             elements.modal.addClass('modal-out').removeClass('modal-in');
@@ -72,7 +77,7 @@ charset = 'utf-8';
                     if(colsLen && i > colsLen - 1) return false;      //按照初始值设置列
                     arr.push('<div class="picker-items-col"><div class="picker-items-col-wrapper">');
                     $.each(v.values, function (m, n) {
-                        arr.push('<div class="picker-item">' + n + '</div>');
+                        arr.push('<div class="picker-item" data-val="'+ n +'">' + n + '</div>');
                     });
                     arr.push('</div></div>');
                 });
@@ -83,7 +88,8 @@ charset = 'utf-8';
 
         /*初始化列表*/
         self.initCols = function () {
-            $.each(elements.container.find('.picker-items-col'), function () {
+            self.cols = elements.container.find('.picker-items-col');
+            $.each(self.cols, function () {
                 var col = $(this), colIndex = col.index();
                 //console.log(colIndex)
 
@@ -119,11 +125,35 @@ charset = 'utf-8';
 
 
                 /*选项高亮*/
-                col.updateItems = function (index) {
+                col.updateItems = function (index, translate) {
+                    if (!translate) translate = fnGetTranslate(col.wrapper[0], 'y');
+                    if (!index) index = -Math.round((translate - maxTranslate)/itemHeight);  //touchmove
+
                     if (index < 0) index = 0;
                     if (index >= col.items.length) index = col.items.length - 1;
-
                     col.items.eq(index).addClass('picker-selected').siblings().removeClass('picker-selected');
+                    col.data('val',col.items.eq(index).data('val')); //该列要显示的值
+
+
+                    if(col.activeIndex != index){
+                        col.activeIndex = index;
+                        col.setValue();
+                    }
+
+                };
+
+                /*input赋值*/
+                col.setValue = function () {
+                    console.log(col.displayValue)
+                    var params = {
+                        value: []
+                    };
+                    $.each(self.cols, function (i, v) {
+                        var _this = $(this);
+                        console.log(_this.data('val'))
+                        params.value.push(_this.data('val') || self.params.value[i]);
+                    });
+                    elements.input.val(self.params.formatValue ? self.params.formatValue(params) : params.value.join(' '));
                 };
 
 
@@ -155,8 +185,7 @@ charset = 'utf-8';
 
                     //滑动
                     fnTranslate(col.wrapper,currentTranslate,200);
-                    var activeIndex =  -Math.round((currentTranslate - maxTranslate)/itemHeight);
-                    col.updateItems(activeIndex);
+                    col.updateItems(null, currentTranslate);
 
                 }
 
@@ -180,19 +209,6 @@ charset = 'utf-8';
 
             });
         };
-
-
-
-        /*打开模态框*/
-        self.open = function () {
-            elements.modal.addClass('modal-in').removeClass('modal-out');
-        };
-
-        /*update scroll position*/
-        function fnUpdateDuringScroll() {
-
-        }
-
 
 
         /*
@@ -354,6 +370,9 @@ charset = 'utf-8';
         onChange: function (picker) {
             var days = M.getDaysByYearAndMonth(picker[0], picker[1]);
             if (picker[2] > days.length)  picker[2] = days.length;
+        },
+        formatValue: function (params) {
+            return M.formatDate(params.value, params.format || defaults.format);
         }
     };
     /*需要显示的列数*/
