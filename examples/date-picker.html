@@ -36,6 +36,7 @@
                     </ul>
                 </div>
             </div>
+            <p id="span-picker" style="padding: 10px;background: #ccc;"></p>
         </div>
     </div>
 
@@ -49,48 +50,24 @@
         </header>
 
         <!--选择列-->
-        <div class="picker-modal-inner picker-items">
-                <div class="picker-items-col">
-                    <div class="picker-items-col-wrapper">
-                        <div class="picker-item">1950</div>
-                        <div class="picker-item">1951</div>
-                        <div class="picker-item picker-selected">1951</div>
-                        <div class="picker-item">1951</div>
-                        <div class="picker-item">1951</div>
-                        <div class="picker-item">1951</div>
-                        <div class="picker-item">1951</div>
-                    </div>
-                </div>
-                <div class="picker-items-col">
-                    <div class="picker-items-col-wrapper">
-                        <div class="picker-item">01</div>
-                        <div class="picker-item">02</div>
-                        <div class="picker-item picker-selected">03</div>
-                        <div class="picker-item">04</div>
-                        <div class="picker-item">05</div>
-                        <div class="picker-item">06</div>
-                        <div class="picker-item">07</div>
-                    </div>
-                </div>
-                <div class="picker-items-col">
-                    <div class="picker-items-col-wrapper">
-                        <div class="picker-item">01</div>
-                        <div class="picker-item">02</div>
-                        <div class="picker-item picker-selected">03</div>
-                        <div class="picker-item">04</div>
-                        <div class="picker-item">05</div>
-                        <div class="picker-item">06</div>
-                        <div class="picker-item">07</div>
-                    </div>
-                </div>
-                <div class="picker-center-highlight"></div>
-            </div>
+        <div class="picker-modal-inner picker-items"></div>
 
     </div>
     <script>
         $(function () {
             $("#datetime-picker").datetimePicker({
                 value: ['2015', '12', '29', '19', '15']
+            });
+
+            $("#span-picker").picker({
+                cols: [
+                    {
+                        values: ['1','2','3','4','5']
+                    },
+                    {
+                        values: ['1','2','3','4','5']
+                    }
+                ]
             });
         })
     </script>

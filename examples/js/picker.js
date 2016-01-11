@@ -7,6 +7,19 @@ charset = 'utf-8';
 (function ($) {
     'use strict';
 
+    /*工具:支持判断*/
+    $.support = (function () {
+        return {
+            touch: !!('ontouchstart' in window)     //是否支持touch
+        }
+    })();
+    /*当前状态支持的事件*/
+    $.events = {
+        start: $.support.touch ? 'touchstart' : 'mousedown',
+        move: $.support.touch ? 'touchmove' : 'mousemove',
+        end: $.support.touch ? 'touchend' : 'mouseup'
+    };
+
     var Picker = function (options) {
         var self = this;
         var defaults = {
@@ -15,10 +28,8 @@ charset = 'utf-8';
             toolbar: true,
             toolbarCloseText: '确定',  //关闭按钮文案
             toolbarTemplate: [
-                '<header class="bar bar-nav">',
-                '<button class="button button-link pull-right close-picker">确定</button>',
-                '<h1 class="title">请选择</h1>',
-                '</header>'
+                '<header class="bar bar-nav">','<button class="btn close-picker">确定</button>',
+                '<h1 class="title">请选择</h1>','</header>'
             ].join('')
         };
 
@@ -26,17 +37,6 @@ charset = 'utf-8';
         self.params = $.extend({}, defaults, options);  //console.log(self.params)
 
         self.initialized = false; //初始化过
-        self.support = (function () {
-           return {
-               touch: !!('ontouchstart' in window)     //是否支持touch
-           }
-        })();
-        /*当前状态支持的事件*/
-        self.events = {
-            start: self.support.touch ? 'touchstart' : 'mousedown',
-            move: self.support.touch ? 'touchmove' : 'mousemove',
-            end: self.support.touch ? 'touchend' : 'mouseup'
-        };
 
         /*页面元素*/
         var elements = {
@@ -48,13 +48,13 @@ charset = 'utf-8';
         /*method*/
         self.init = function () {
             self.layout();
-
-            self.initCols();
         };
 
         /*打开模态框*/
         self.open = function () {
             elements.modal.addClass('modal-in').removeClass('modal-out');
+            //self.layout();  //注意：此处涉及到页面多个调用时，需要特殊处理，暂时留坑...
+            self.initCols();
         };
 
         /*关闭模态框*/
@@ -62,14 +62,11 @@ charset = 'utf-8';
             elements.modal.addClass('modal-out').removeClass('modal-in');
         };
 
-        /*设置布局，选项等*/
+        /*
+        * 设置布局，选项等
+        * 设置列元素，写入dom
+        * */
         self.layout = function () {
-            self.initialized = true;
-            self.setItems();
-        };
-
-        /*设置列元素，写入dom*/
-        self.setItems = function () {
             var colsLen = self.params.value.length;    //初始值数组长度
             if (self.params.cols.length) {
                 var arr = ['<div class="picker-center-highlight"></div>'];
@@ -77,33 +74,110 @@ charset = 'utf-8';
                     if(colsLen && i > colsLen - 1) return false;      //按照初始值设置列
                     arr.push('<div class="picker-items-col"><div class="picker-items-col-wrapper">');
                     $.each(v.values, function (m, n) {
-                        arr.push('<div class="picker-item" data-val="'+ n +'">' + n + '</div>');
+                        arr.push('<div class="picker-item">' + n + '</div>');
                     });
                     arr.push('</div></div>');
                 });
+                console.log(elements.container)
                 elements.container.empty().append(arr.join(''));
             }
 
         };
 
+        /*input赋值*/
+        self.setValue = function () {
+            var params = {value:[]};
+            $.each(self.params.cols, function (i, v) {
+                params.value.push(self.params.cols[i].value);
+            });
+
+            if (self.params.onChange) {
+                //变更值，联动处理
+                self.params.onChange(self.params);
+                //console.log(JSON.stringify(self.params.cols))
+            }
+            var displayValue = self.params.formatValue ? self.params.formatValue(params) : params.value.join(' ');
+            var method = elements.input[0].tagName.toLowerCase() === 'input' ? 'val' : 'text';
+            elements.input[method](displayValue);
+        };
+
+
         /*初始化列表*/
         self.initCols = function () {
-            self.cols = elements.container.find('.picker-items-col');
-            $.each(self.cols, function () {
-                var col = $(this), colIndex = self.cols.index(col);
-                console.log(colIndex)
+            elements.cols = elements.container.find('.picker-items-col');
+            $.each(elements.cols, function () {
+                var _this = $(this), colIndex = elements.cols.index(_this);
+                //console.log(colIndex)
 
-                col.wrapper = col.find('.picker-items-col-wrapper');
-                col.items = col.find('.picker-item');
+                var col = self.params.cols[colIndex];
+                col.value =  self.params.value[colIndex] || col.values[0];     //初始化值
 
-                /*处理绑定事件*/
+                col.container = _this; //列容器
+                col.wrapper = col.container.find('.picker-items-col-wrapper');
+                col.items = col.container.find('.picker-item'); //每一行
+
+                /*处理绑定事件
+                * @param: action[String] on/off
+                * on-绑定  off-解绑
+                * */
                 col.handleEvents = function(action){
-                    col[action](self.events.start, fnTouchStart);
-                    col[action](self.events.move, fnTouchMove);
-                    col[action](self.events.end, fnTouchEnd);
+                    col.container[action]($.events.start, fnTouchStart);
+                    col.container[action]($.events.move, fnTouchMove);
+                    col.container[action]($.events.end, fnTouchEnd);
                 };
 
-                col.handleEvents('on');
+
+                /*
+                 * 声明需要用到的变量
+                 * */
+                var isTouched, isMoved, startY, currentY, movedY,startTranslate,currentTranslate; //拖动需要用到的偏移量计算
+                var colHeight,itemsHeight,itemHeight;   //高度
+                var minTranslate,maxTranslate;   //防止脱出容器
+
+                colHeight = col.container[0].offsetHeight;     //col容器高度
+                itemHeight = col.items[0].offsetHeight;     //item高度
+                itemsHeight = itemHeight * col.items.length;
+
+                minTranslate = colHeight / 2 + itemHeight / 2 - itemsHeight;  //向上拖动最大偏移量
+                maxTranslate = colHeight / 2 - itemHeight / 2;  //向下拖动最大偏移量
+
+
+
+
+                /*选项高亮*/
+                col.setItems = function (index, translate) {
+                    if (!translate) translate = fnGetTranslate(col.wrapper[0], 'y');
+                    if (!index) index = -Math.round((translate - maxTranslate)/itemHeight);  //touchmove
+
+                    //console.log('index',index)
+                    if (index < 0) index = 0;
+                    if (index >= col.items.length) index = col.items.length - 1;
+
+                    self.params.cols[colIndex].value = self.params.cols[colIndex].values[index]; //存储该列要显示的值
+
+                    if(col.activeIndex != index){
+                        col.activeIndex = index;
+                        self.setValue();
+                    }
+
+                    /*选中item*/
+                    col.items.eq(index).addClass('picker-selected').siblings().removeClass('picker-selected');
+
+                };
+
+
+                /*
+                * 初始化该列的默认值
+                * 设置该列的位置
+                * */
+                col.initValue = function (val) {
+                    var activeIndex = $.inArray(val,self.params.cols[colIndex].values);
+                    //console.log('init activeIndex',activeIndex);
+                    var translateY = -activeIndex * itemHeight + maxTranslate;
+                    fnTranslate(col.wrapper,translateY);
+                    col.setItems(activeIndex, translateY);
+                };
+
 
 
                 /*
@@ -112,63 +186,13 @@ charset = 'utf-8';
                  * targetTouches是当前对象上所有触摸点的列表;
                  * changedTouches是涉及当前事件的触摸点的列表。
                  * */
-                var isTouched, isMoved, startY, currentY, movedY,startTranslate,currentTranslate;
-                var colHeight,itemsHeight,itemHeight;
-                var minTranslate,maxTranslate;
-
-                colHeight = col[0].offsetHeight;     //col容器高度
-                itemHeight = col.items[0].offsetHeight;     //item高度
-                itemsHeight = itemHeight * col.items.length;
-
-                minTranslate = colHeight / 2 + itemHeight / 2 - itemsHeight;  //向上拖动最大偏移量
-                maxTranslate = colHeight / 2 - itemHeight / 2;  //向下拖动最大偏移量
-
-
-                /*选项高亮*/
-                col.updateItems = function (index, translate) {
-                    if (!translate) translate = fnGetTranslate(col.wrapper[0], 'y');
-                    if (!index) index = -Math.round((translate - maxTranslate)/itemHeight);  //touchmove
-
-                    if (index < 0) index = 0;
-                    if (index >= col.items.length) index = col.items.length - 1;
-                    col.items.eq(index).addClass('picker-selected').siblings().removeClass('picker-selected');
-
-                    self.params.cols[colIndex].value = col.items.eq(index).data('val'); //存储该列要显示的值
-
-                    if(col.activeIndex != index){
-                        col.activeIndex = index;
-                        col.setValue();
-                    }
-
-                };
-
-                /*input赋值*/
-                col.setValue = function () {
-                    var params = {
-                        value: []
-                    };
-                    $.each(self.params.cols, function (i, v) {
-                        self.params.cols[i].value = v.value || self.params.value[i];
-                        params.value.push(v.value || self.params.value[i]);
-                    });
-
-                    if (self.params.onChange) {
-                        //变更值，联动处理
-                        self.params.onChange(self.params);
-
-                        console.log(JSON.stringify(self.params.cols))
-                    }
-                    elements.input.val(self.params.formatValue ? self.params.formatValue(params) : params.value.join(' '));
-                };
-
-
-                /*touch satrt*/
+                /*touch start*/
                 function fnTouchStart(e) {
                     if (isMoved || isTouched) return false;
                     e.preventDefault();
                     isTouched = true;
                     startY = e.type === 'touchstart' ? e.targetTouches[0].pageY : e.pageY;
-                    console.log('startY',startY);
+                    //console.log('startY',startY);
                     startTranslate = fnGetTranslate(col.wrapper[0], 'y');
                     console.log('startTranslate',typeof startTranslate, startTranslate)
                 }
@@ -190,13 +214,13 @@ charset = 'utf-8';
 
                     //滑动
                     fnTranslate(col.wrapper,currentTranslate,200);
-                    col.updateItems(null, currentTranslate);
+                    col.setItems(null, currentTranslate);
 
                 }
 
                 /*touch end*/
                 function fnTouchEnd(e) {
-                    console.log('fnTouchEnd')
+                    //console.log('fnTouchEnd')
                     isTouched = isMoved = false;
 
                     //偏移量
@@ -207,10 +231,16 @@ charset = 'utf-8';
                     //滑动
                     fnTranslate(col.wrapper,currentTranslate,200);
 
-                    //activeIndex 定位选项
-                    var activeIndex = -Math.floor((currentTranslate - maxTranslate)/itemHeight); //向下取整
-                    col.updateItems(activeIndex);
                 }
+
+
+
+
+                /*选中默认值*/
+                col.initValue(self.params.value[colIndex] || self.params.cols[colIndex].values[0]);
+
+                /*绑定事件*/
+                col.handleEvents('on');
 
             });
         };
@@ -278,6 +308,7 @@ charset = 'utf-8';
 
         /*fun: fnOnHtmlClick*/
         function fnOnHtmlClick(e) {
+            console.log(e.target != elements.input[0])
             if (elements.modal[0]) {
                 if (e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) self.close();
             }
@@ -288,7 +319,8 @@ charset = 'utf-8';
             self.close();
         }).on('click', fnOnHtmlClick);
 
-        elements.input.on('focus click', function () {
+        elements.input.on('focus click', function (e) {
+            e.stopPropagation();
             self.open();
         });
 
@@ -375,14 +407,24 @@ charset = 'utf-8';
         onChange: function (picker) {
             var days = M.getDaysByYearAndMonth(picker.cols[0].value, picker.cols[1].value);
             var currentValue = picker.cols[2].value;
-            //console.log(picker.cols[0].value, picker.cols[1].value, days.length)
             if(currentValue > days.length) currentValue = days.length; //日
             picker.cols[2].value = currentValue;
+
+            //console.log(picker.cols[0].value, picker.cols[1].value, picker.cols[2].value)
+            //console.log(picker.cols[2].setValue)
+            //picker.cols[2].setValue(currentValue);
         },
         formatValue: function (params) {
             return M.formatDate(params.value, params.format || defaults.format);
         }
     };
+
+    /*当前时间*/
+    defaults.value = $.map([M.today.getFullYear(),M.today.getMonth() + 1,M.today.getDate(),M.today.getHours(),M.today.getMinutes()], function (item, index) {
+        return M.formatNum(item);
+    });
+    console.log(defaults.value)
+
     /*需要显示的列数*/
     defaults.cols = [
         {
