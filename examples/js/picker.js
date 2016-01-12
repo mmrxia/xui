@@ -24,8 +24,10 @@
         var self = this;
         var defaults = {
             cols: [], //列
+            realTime: true,  //实时显示文本域中的值
+            callback: null, //点击确定后的回调行数，此时realTime为false
             inputReadOnly: true, //input是否只读
-            toolbar: true,
+            toolbar: true,    //是否显示标题栏
             toolbarCloseText: '确定',  //关闭按钮文案
             toolbarTemplate: [
                 '<header class="bar bar-nav">', '<button class="btn close-picker">确定</button>',
@@ -37,7 +39,7 @@
         self.params = $.extend({}, defaults, options);  //console.log(self.params)
 
         self.initialized = false; //初始化过
-        self.displayValue = [];
+        self.displayValue = self.params.value || [];
 
         /*页面元素*/
         var elements = {
@@ -97,13 +99,14 @@
                 self.params.onChange(self.params);
                 //console.log(JSON.stringify(self.params.cols))
             }
-            self.showResult();
+            self.params.realTime && self.showResult();
         };
 
         /*input赋值*/
         self.showResult = function () {
             //console.log(self.displayValue)
             var result = {value: self.displayValue};
+            console.log(self.displayValue)
             var resultValue = self.params.formatValue ? self.params.formatValue(result) : result.value.join(' ');
             var method = elements.input[0].tagName.toLowerCase() === 'input' ? 'val' : 'text';
             elements.input[method](resultValue);
@@ -325,6 +328,8 @@
         /*bind events*/
         $(document.body).on('click', '.close-picker', function () {
             self.close();
+            !self.params.realTime && self.showResult();
+            self.params.callback && self.params.callback();
         }).on('click', fnOnHtmlClick);
 
         elements.input.on('click', function (e) {
