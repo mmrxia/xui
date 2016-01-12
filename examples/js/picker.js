@@ -200,7 +200,7 @@
                     if (isMoved || isTouched) return false;
                     e.preventDefault();
                     isTouched = true;
-                    startY = e.type === 'touchstart' ? e.targetTouches[0].pageY : e.pageY;
+                    startY = e.type === 'touchstart' ? e.targetTouches ? e.targetTouches[0].pageY : e.originalEvent.targetTouches[0].pageY : e.pageY;
                     //console.log('startY',startY);
                     startTranslate = fnGetTranslate(col.wrapper[0], 'y');
                     console.log('startTranslate', typeof startTranslate, startTranslate)
@@ -212,7 +212,7 @@
                     e.preventDefault();
                     isTouched = true;
 
-                    currentY = e.type === 'touchmove' ? e.targetTouches[0].pageY : e.pageY;
+                    currentY = e.type === 'touchmove' ? e.targetTouches ? e.targetTouches[0].pageY : e.originalEvent.targetTouches[0].pageY : e.pageY;
                     movedY = currentY - startY;
 
                     //偏移量
