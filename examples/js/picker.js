@@ -466,7 +466,7 @@
             if (!this) return;
             var params = $.extend({}, defaults, options || {});
             //console.log(JSON.stringify(params))
-            if (options.value) $(this).val(M.formatDate(params.value, params.format));
+            if (options && options.value) $(this).val(M.formatDate(params.value, params.format));
             $(this).picker(params);
         });
     };
