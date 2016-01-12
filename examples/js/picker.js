@@ -39,7 +39,7 @@
         self.params = $.extend({}, defaults, options);  //console.log(self.params)
 
         self.initialized = false; //初始化过
-        self.displayValue = self.params.value || [];
+        self.displayValue = self.params.value || [];    //最终要显示的值数组
 
         /*页面元素*/
         var elements = {
@@ -109,6 +109,7 @@
             console.log(self.displayValue)
             var resultValue = self.params.formatValue ? self.params.formatValue(result) : result.value.join(' ');
             var method = elements.input[0].tagName.toLowerCase() === 'input' ? 'val' : 'text';
+            console.log(elements.input)
             elements.input[method](resultValue);
         };
 
@@ -329,7 +330,7 @@
         $(document.body).on('click', '.close-picker', function () {
             self.close();
             !self.params.realTime && self.showResult();
-            self.params.callback && self.params.callback();
+            self.params.callback && self.params.callback.call(self,{value: self.displayValue});
         }).on('click', fnOnHtmlClick);
 
         elements.input.on('click', function (e) {
@@ -351,7 +352,7 @@
             var picker = $this.data("picker");
             if (!picker) {
                 var params = $.extend({
-                    input: this,
+                    input: $this,
                     value: $this.val() ? $this.val().split(' ') : ''
                 }, options || {});
                 picker = new Picker(params);
