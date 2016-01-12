@@ -1,7 +1,7 @@
-charset = 'utf-8';
 /*
  * picker.js
  * ios风格多列选择功能组件，如日期、通讯录、省市区等
+ * by xqs @2016
  * */
 ;
 (function ($) {
@@ -355,7 +355,7 @@ charset = 'utf-8';
             }
         });
     };
-})(Zepto);
+})(jQuery || Zepto);
 
 
 /*datetimePicker*/
@@ -472,4 +472,4 @@ charset = 'utf-8';
     };
 
 
-})(Zepto);
+})(jQuery || Zepto);
