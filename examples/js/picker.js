@@ -83,7 +83,6 @@
                     });
                     arr.push('</div></div>');
                 });
-                console.log(elements.container)
                 elements.container.empty().append(arr.join(''));
             }
 
@@ -203,7 +202,7 @@
                     startY = e.type === 'touchstart' ? e.targetTouches ? e.targetTouches[0].pageY : e.originalEvent.targetTouches[0].pageY : e.pageY;
                     //console.log('startY',startY);
                     startTranslate = fnGetTranslate(col.wrapper[0], 'y');
-                    console.log('startTranslate', typeof startTranslate, startTranslate)
+                    //console.log('startTranslate', typeof startTranslate, startTranslate)
                 }
 
                 /*touch move*/
@@ -314,7 +313,6 @@
 
         /*fun: fnOnHtmlClick*/
         function fnOnHtmlClick(e) {
-            console.log(e.target != elements.input[0])
             if (elements.modal[0]) {
                 if (e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) self.close();
             }
@@ -355,7 +353,7 @@
             }
         });
     };
-})(jQuery || Zepto);
+})(window.jQuery || window.Zepto);
 
 
 /*datetimePicker*/
@@ -472,4 +470,4 @@
     };
 
 
-})(jQuery || Zepto);
+})(window.jQuery || window.Zepto);
