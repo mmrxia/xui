@@ -201,7 +201,8 @@
                     isTouched = true;
                     startY = e.type === 'touchstart' ? e.targetTouches ? e.targetTouches[0].pageY : e.originalEvent.targetTouches[0].pageY : e.pageY;
                     //console.log('startY',startY);
-                    startTranslate = fnGetTranslate(col.wrapper[0], 'y');
+
+                    startTranslate = currentTranslate = fnGetTranslate(col.wrapper[0], 'y');
                     //console.log('startTranslate', typeof startTranslate, startTranslate)
                 }
 
@@ -230,7 +231,6 @@
                 function fnTouchEnd(e) {
                     //console.log('fnTouchEnd')
                     isTouched = isMoved = false;
-
                     //偏移量
                     currentTranslate = Math.round(currentTranslate / itemHeight) * itemHeight; //四舍五入
                     if (currentTranslate > maxTranslate) currentTranslate = maxTranslate; //向下拉取范围
@@ -287,9 +287,7 @@
          * @param axis 轴（x/y）
          * */
         function fnGetTranslate(ele, axis) {
-            if (typeof axis === 'undefined') axis = 'x';
-
-            var currTransform, curStyle = window.getComputedStyle(ele, null); //不同的浏览器估计会有不同的处理方式,此处留坑。。。
+            //不同的浏览器估计会有不同的处理方式,此处留坑。。。
             /*
              * curStyle.transform
              * 设置  -webkit-transform: translate3d(10px,-100px,-5px);
@@ -297,19 +295,23 @@
              * 设置  -webkit-transform: translate3d(0,-100px,0);
              * 得到矩阵字符串 matrix(1, 0, 0, 1, 0, -100)
              * */
-            var transformMatrix = curStyle.transform === 'none' ? '' : curStyle.transform;
-            //console.log('transformMatrix',transformMatrix);
+            var matrix, curTransform, curStyle, transformMatrix;
 
-            var matrixArr = transformMatrix.split(',')
-            if (axis === 'x') {
-                currTransform = matrixArr.length === 16 ? matrixArr[12] : matrixArr[4]
-            } else if (axis === 'y') {
-                currTransform = matrixArr.length === 16 ? matrixArr[13] : matrixArr[5]
+            if (typeof axis === 'undefined') axis = 'x';   //默认为x轴
+
+            curStyle = window.getComputedStyle(ele, null);
+            if (window.WebKitCSSMatrix) {
+                transformMatrix = new WebKitCSSMatrix(curStyle.webkitTransform === 'none' ? '' : curStyle.webkitTransform);
+                curTransform = (axis === 'x') ? transformMatrix.m41 : transformMatrix.m42;
+            }else {
+                transformMatrix = curStyle.MozTransform || curStyle.transform || curStyle.getPropertyValue('transform').replace('translate(', 'matrix(1, 0, 0, 1,');
+                matrix = transformMatrix.toString().split(',');
+                if (axis === 'x') curTransform = (matrix.length === 16)? parseFloat(matrix[12]) : parseFloat(matrix[4]);
+                if (axis === 'y') curTransform = (matrix.length === 16)? parseFloat(matrix[13]) : parseFloat(matrix[5]);
             }
 
-            return parseFloat(currTransform) || 0;
+            return curTransform || 0;
         }
-
 
         /*fun: fnOnHtmlClick*/
         function fnOnHtmlClick(e) {
@@ -323,7 +325,7 @@
             self.close();
         }).on('click', fnOnHtmlClick);
 
-        elements.input.on('focus click', function (e) {
+        elements.input.on('click', function (e) {
             e.stopPropagation();
             self.open();
         });
