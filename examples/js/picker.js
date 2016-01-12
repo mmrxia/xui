@@ -1,7 +1,7 @@
-charset = 'utf-8';
 /*
  * picker.js
  * ios风格多列选择功能组件，如日期、通讯录、省市区等
+ * by xqs @2016
  * */
 ;
 (function ($) {
@@ -346,7 +346,7 @@ charset = 'utf-8';
                 var params = $.extend({
                     input: this,
                     value: $this.val() ? $this.val().split(' ') : ''
-                }, options);
+                }, options || {});
                 picker = new Picker(params);
                 $this.data("picker", picker);
             }
@@ -355,7 +355,7 @@ charset = 'utf-8';
             }
         });
     };
-})(Zepto);
+})(jQuery || Zepto);
 
 
 /*datetimePicker*/
@@ -464,12 +464,12 @@ charset = 'utf-8';
     $.fn.datetimePicker = function (options) {
         return this.each(function () {
             if (!this) return;
-            var params = $.extend({}, defaults, options);
+            var params = $.extend({}, defaults, options || {});
             //console.log(JSON.stringify(params))
-            if (options.value) $(this).val(M.formatDate(params.value, params.format));
+            if (options && options.value) $(this).val(M.formatDate(params.value, params.format));
             $(this).picker(params);
         });
     };
 
 
-})(Zepto);
+})(jQuery || Zepto);
