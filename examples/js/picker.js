@@ -272,6 +272,7 @@
          * @param duration 过渡执行时间
          * */
         function fnTranslate(ele, offset, duration) {
+            // 在 webkit-transforms用 translate3d 的动画会得到硬件加速,性能显著提高
             var _style = 'translate3d(0,' + (offset || 0) + 'px,0)';
             ele.css({
                 '-webkit-transform': _style,
@@ -299,8 +300,9 @@
 
             if (typeof axis === 'undefined') axis = 'x';   //默认为x轴
 
-            curStyle = window.getComputedStyle(ele, null);
+            curStyle = window.getComputedStyle(ele, null); // 获取样式对象.
             if (window.WebKitCSSMatrix) {
+                //WebKitCSSMatrix 是WebKit内核提供可计算transform的方法. 其他支持HTML5的浏览器也有各自的方法.
                 transformMatrix = new WebKitCSSMatrix(curStyle.webkitTransform === 'none' ? '' : curStyle.webkitTransform);
                 curTransform = (axis === 'x') ? transformMatrix.m41 : transformMatrix.m42;
             }else {
