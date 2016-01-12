@@ -346,7 +346,7 @@
                 var params = $.extend({
                     input: this,
                     value: $this.val() ? $this.val().split(' ') : ''
-                }, options);
+                }, options || {});
                 picker = new Picker(params);
                 $this.data("picker", picker);
             }
@@ -464,7 +464,7 @@
     $.fn.datetimePicker = function (options) {
         return this.each(function () {
             if (!this) return;
-            var params = $.extend({}, defaults, options);
+            var params = $.extend({}, defaults, options || {});
             //console.log(JSON.stringify(params))
             if (options.value) $(this).val(M.formatDate(params.value, params.format));
             $(this).picker(params);
