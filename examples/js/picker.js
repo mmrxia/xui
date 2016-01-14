@@ -43,7 +43,7 @@
         self.initialized = false; //初始化过
         self.opened = false; //模态框是否已打开
         self.inline = false;
-        self.displayValue = params.value || [];    //最终要显示的值数组
+        self.displayValue = params.value.concat() || [];    //最终要显示的值数组,concat避免引用改变原值
 
         /*页面元素*/
         var elements = {
@@ -490,7 +490,7 @@
     };
 
     /*当前时间*/
-    defaults.value = M.DateStringToArr();
+    defaults.value = M.DateStringToArr();   //默认为当前时间
     //console.log(defaults.value)
 
     /*需要显示的列数*/
@@ -530,10 +530,11 @@
 
             var params = $.extend({}, defaults, options || {});
 
+            if (options && options.value) $this.val(M.formatDate(options.value, params.format));
+
             var dateStr = $this[0].tagName.toLowerCase() === 'input' ? $this.val() : $this.text();  //dateStr = '';
             if (dateStr) params.value = M.DateStringToArr(dateStr);
 
-            if (options && options.value) $this.val(M.formatDate(params.value, params.format));
             $this.picker(params);
         });
     };
