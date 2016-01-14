@@ -10,7 +10,7 @@
     <meta name="format-detection" content="telephone=no"/>
     <link rel="stylesheet" href="../dist/xui.css"/>
     <link rel="stylesheet" href="css/picker.css"/>
-    <script src="../static/js/zepto.min.js"></script>
+    <script src="../static/js/jquery.min.js"></script>
     <script src="js/picker.js"></script>
 </head>
 <body>
@@ -28,8 +28,10 @@
                                     <div class="item-title label">时间日期</div>
                                     <div class="item-input">
                                         <!--日期输入目标容器-->
-                                        <input type="text" placeholder="" id='datetime-picker' readonly />
-                                        <input type="text" placeholder="" id='datetime-picker-2' readonly />
+                                        <input type="text" placeholder="" id='datetime-picker' value="" readonly />
+                                        <input type="text" placeholder="" id='datetime-picker-2' value="" readonly />
+                                        <!--<input type="text" placeholder="" id='datetime-picker' value="2015/12/12 12:12" readonly />
+                                        <input type="text" placeholder="" id='datetime-picker-2' value="2011/11/11 11:11" readonly />-->
                                     </div>
                                 </div>
                             </div>
@@ -41,38 +43,14 @@
         </div>
     </div>
 
-    <!--picker modal-->
-    <div class="picker-modal" style="display: block">
-
-        <!--标题-->
-        <header class="tool-bar">
-            <h1 class="title">请选择</h1>
-            <button class="btn close-picker">确定</button>
-        </header>
-
-        <!--选择列-->
-        <div class="picker-modal-inner picker-items"></div>
-
-    </div>
     <script>
         $(function () {
-            $("#datetime-picker").datetimePicker({
-                value: ['2015', '12', '29', '19', '15']
+            $("#datetime-picker,#datetime-picker-2").datetimePicker({
+                atOnce: false,
+                onClose: function (res) {
+                    res.input.val(res.string);
+                }
             });
-            $("#datetime-picker-2").datetimePicker({
-                //value: ['2015', '12', '29', '19', '15']
-            });
-
-            /*$("#span-picker").picker({
-                cols: [
-                    {
-                        values: ['1','2','3','4','5']
-                    },
-                    {
-                        values: ['1','2','3','4','5']
-                    }
-                ]
-            });*/
         })
     </script>
 
