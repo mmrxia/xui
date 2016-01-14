@@ -24,60 +24,49 @@
         var self = this;
         var defaults = {
             cols: [], //列
-            realTime: true,  //实时显示文本域中的值
-            callback: null, //点击确定后的回调行数，此时realTime为false
+            atOnce: true,  //实时显示文本域中的值
+            onOpen: null, //打开模态框后的回调行数
+            onClose: null, //关闭模态框后的回调行数，此时realTime为false
             inputReadOnly: true, //input是否只读
-            toolbar: true,    //是否显示标题栏
-            toolbarCloseText: '确定',  //关闭按钮文案
-            toolbarTemplate: [
-                '<header class="bar bar-nav">', '<button class="btn close-picker">确定</button>',
-                '<h1 class="title">请选择</h1>', '</header>'
-            ].join('')
+            toolbarCloseText: '确定'  //关闭按钮文案
         };
 
+        /*头部dom结构*/
+        defaults.toolbarTpl = [
+            '<header class="tool-bar">', '<h1 class="title">请选择</h1>',
+            '<button class="btn close-picker">' + (defaults.toolbarCloseText || "确定") + '</button>', '</header>'
+        ].join('');
+
         /*参数*/
-        self.params = $.extend({}, defaults, options);  //console.log(self.params)
+        var params = $.extend({}, defaults, options);  //console.log(params)
 
         self.initialized = false; //初始化过
-        self.displayValue = self.params.value || [];    //最终要显示的值数组
+        self.opened = false; //模态框是否已打开
+        self.inline = false;
+        self.displayValue = params.value || [];    //最终要显示的值数组
 
         /*页面元素*/
         var elements = {
-            modal: $('.picker-modal'),   //modal container
-            input: $(self.params.input), //input
-            container: $('.picker-items')  //items container
+            body: $(document.body),
+            input: $(params.input) //input
         };
 
-        /*method*/
-        self.init = function () {
-            self.layout();
-        };
-
-        /*打开模态框*/
-        self.open = function () {
-            elements.modal.addClass('modal-in').removeClass('modal-out');
-            //self.layout();  //注意：此处涉及到页面多个调用时，需要特殊处理，暂时留坑...
-            //if(!self.initialized) self.initCols();
-            self.initialized = true;
-            self.initCols();
+        self.inline = elements.modal ? true : false;   //当前模态框存在
 
 
-        };
-
-        /*关闭模态框*/
-        self.close = function () {
-            elements.modal.addClass('modal-out').removeClass('modal-in');
-        };
+        /*=====================
+         * method
+         * =====================*/
 
         /*
          * 设置布局，选项等
          * 设置列元素，写入dom
          * */
         self.layout = function () {
-            var colsLen = self.params.value.length;    //初始值数组长度
-            if (self.params.cols.length) {
-                var arr = ['<div class="picker-center-highlight"></div>'];
-                $.each(self.params.cols, function (i, v) {
+            var colsLen = params.value.length;    //初始值数组长度
+            var arr = ['<div class="picker-modal modal-out" style="display:block">', params.toolbarTpl, '<div class="picker-items"><div class="picker-center-highlight"></div>'];
+            if (params.cols.length) {
+                $.each(params.cols, function (i, v) {
                     if (colsLen && i > colsLen - 1) return false;      //按照初始值设置列
                     arr.push('<div class="picker-items-col"><div class="picker-items-col-wrapper">');
                     $.each(v.values, function (m, n) {
@@ -85,174 +74,220 @@
                     });
                     arr.push('</div></div>');
                 });
-                elements.container.empty().append(arr.join(''));
+                arr.push('</div></div>');
+            }
+            return $(arr.join('')).appendTo(elements.body);
+        };
+
+        /*打开模态框*/
+        self.open = function () {
+
+            if (!self.opened) {
+                self.initialized = true;
+
+                if (!self.inline) {
+                    elements.modal = $(self.layout()); //设置dom
+                    elements.cols = elements.modal.find('.picker-items-col');
+
+                    elements.modal.on('close', function () {
+                        var thisModal = $(this);
+                        self.opened = false;
+
+                        thisModal.addClass('modal-out').removeClass('modal-in');
+                        var t = setTimeout(function () {
+                            clearTimeout(t);
+                            thisModal.remove();
+                        }, 400);
+
+                        var response = {input: elements.input, value: self.displayValue};
+                        if(params.formatValue) response.string = params.formatValue(response);
+                        //console.log(response)
+                        if (!params.atOnce || params.onClose) params.onClose.call(elements.input, response);//关闭后的回调函数
+
+                    });
+                }
+
+                $.each(elements.cols, function () {
+                    self.initCols(this); //初始化列
+                });
+
+                //console.log(elements.modal)
+                elements.modal.show().addClass('modal-in').removeClass('modal-out');
+
             }
 
+            self.opened = true; //set flag
+
+            /*打开后的回调函数*/
+            if (params.onOpen) params.onOpen();
+
+
+        };
+
+        /*关闭模态框*/
+        self.close = function () {
+            if (!self.opened) return;
+            elements.modal.trigger('close');
         };
 
         /*
          * 其他调整，如月份对应的天数
          * */
         self.setValue = function () {
-            if (self.params.onChange) {
+            if (params.onChange) {
                 //变更值，联动处理
-                self.params.onChange(self.params);
-                //console.log(JSON.stringify(self.params.cols))
+                params.onChange(params);
+                //console.log(JSON.stringify(params.cols))
             }
-            self.params.realTime && self.showResult();
+            params.atOnce && self.showResult();
         };
 
         /*input赋值*/
         self.showResult = function () {
-            //console.log(self.displayValue)
+            //console.log(elements.adang)
             var result = {value: self.displayValue};
-            console.log(self.displayValue)
-            var resultValue = self.params.formatValue ? self.params.formatValue(result) : result.value.join(' ');
+            var resultValue = params.formatValue ? params.formatValue(result) : result.value.join(' ');
             var method = elements.input[0].tagName.toLowerCase() === 'input' ? 'val' : 'text';
-            console.log(elements.input)
+            //console.log(elements.input[0].outerHTML)
             elements.input[method](resultValue);
         };
 
 
         /*初始化列表*/
-        self.initCols = function () {
-            elements.cols = elements.container.find('.picker-items-col');
-            var defaultValue = self.displayValue.length && self.displayValue || self.params.value; //数组
+        self.initCols = function (ele) {
+            var defaultValue = self.displayValue.length && self.displayValue || params.value; //数组
 
-            $.each(elements.cols, function () {
-                var _this = $(this), colIndex = elements.cols.index(_this);
-                //console.log(colIndex)
+            var $this = $(ele), colIndex = elements.cols.index($this);
+            //console.log(colIndex)
 
-                var col = self.params.cols[colIndex];
-                col.value = defaultValue[colIndex] || col.values[0];     //初始化值
+            var col = params.cols[colIndex];
+            col.value = defaultValue[colIndex] || col.values[0];     //初始化值
 
-                col.container = _this; //列容器
-                col.wrapper = col.container.find('.picker-items-col-wrapper');
-                col.items = col.container.find('.picker-item'); //每一行
-
-                /*处理绑定事件
-                 * @param: action[String] on/off
-                 * on-绑定  off-解绑
-                 * */
-                col.handleEvents = function (action) {
-                    col.container[action]($.events.start, fnTouchStart);
-                    col.container[action]($.events.move, fnTouchMove);
-                    col.container[action]($.events.end, fnTouchEnd);
-                };
+            col.container = $this; //列容器
+            col.wrapper = col.container.find('.picker-items-col-wrapper');
+            col.items = col.container.find('.picker-item'); //每一行
 
 
-                /*
-                 * 声明需要用到的变量
-                 * */
-                var isTouched, isMoved, startY, currentY, movedY, startTranslate, currentTranslate; //拖动需要用到的偏移量计算
-                var colHeight, itemsHeight, itemHeight;   //高度
-                var minTranslate, maxTranslate;   //防止脱出容器
+            /*
+             * 声明需要用到的变量
+             * */
+            var isTouched, isMoved, startY, currentY, movedY, startTranslate, currentTranslate; //拖动需要用到的偏移量计算
+            var colHeight, itemsHeight, itemHeight;   //高度
+            var minTranslate, maxTranslate;   //防止脱出容器
 
-                colHeight = col.container[0].offsetHeight;     //col容器高度
-                itemHeight = col.items[0].offsetHeight;     //item高度
-                itemsHeight = itemHeight * col.items.length;
+            colHeight = col.container[0].offsetHeight;     //col容器高度
+            itemHeight = col.items[0].offsetHeight;     //item高度
+            itemsHeight = itemHeight * col.items.length;
 
-                minTranslate = colHeight / 2 + itemHeight / 2 - itemsHeight;  //向上拖动最大偏移量
-                maxTranslate = colHeight / 2 - itemHeight / 2;  //向下拖动最大偏移量
-
-
-                /*选项高亮*/
-                col.highlightItem = function (index, translate) {
-                    if (!translate) translate = fnGetTranslate(col.wrapper[0], 'y');
-                    if (!index) index = -Math.round((translate - maxTranslate) / itemHeight);  //touchmove
-
-                    //console.log('index',index)
-                    if (index < 0) index = 0;
-                    if (index >= col.items.length) index = col.items.length - 1;
-
-                    if (col.activeIndex != index) {
-                        col.activeIndex = index;
-
-                        //set values
-                        self.displayValue[colIndex] = col.values[index]; //存储最终要显示的值
-
-                        self.setValue();
-                    }
-
-                    /*选中item*/
-                    col.items.eq(index).addClass('picker-selected').siblings().removeClass('picker-selected');
-                };
+            minTranslate = colHeight / 2 + itemHeight / 2 - itemsHeight;  //向上拖动最大偏移量
+            maxTranslate = colHeight / 2 - itemHeight / 2;  //向下拖动最大偏移量
 
 
-                /*
-                 * 初始化该列的默认值
-                 * 设置该列的位置
-                 * */
-                col.setColTranslate = function (val) {
-                    var activeIndex = $.inArray(val, col.values);
-                    //console.log('init activeIndex',activeIndex);
-                    var translateY = -activeIndex * itemHeight + maxTranslate;
-                    fnTranslate(col.wrapper, translateY);
-                    col.highlightItem(activeIndex, translateY);
-                };
+            /*
+             * 初始化该列的默认值
+             * 设置该列的位置
+             * */
+            col.setColTranslate = function (val) {
+                var activeIndex = col.activeIndex = $.inArray(val, col.values);
+                //console.log('init activeIndex',activeIndex);
+                var translateY = -activeIndex * itemHeight + maxTranslate;
+                fnTranslate(col.wrapper, translateY);
+                col.highlightItem(activeIndex, translateY);
+            };
 
+            /*选项高亮*/
+            col.highlightItem = function (index, translate) {
+                if (!translate) translate = fnGetTranslate(col.wrapper[0], 'y');
+                if (!index) index = -Math.round((translate - maxTranslate) / itemHeight);  //touchmove
 
-                /*
-                 * 备注：
-                 * touches是当前屏幕上所有触摸点的列表;
-                 * targetTouches是当前对象上所有触摸点的列表;
-                 * changedTouches是涉及当前事件的触摸点的列表。
-                 * */
-                /*touch start*/
-                function fnTouchStart(e) {
-                    if (isMoved || isTouched) return false;
-                    e.preventDefault();
-                    isTouched = true;
-                    startY = e.type === 'touchstart' ? e.targetTouches ? e.targetTouches[0].pageY : e.originalEvent.targetTouches[0].pageY : e.pageY;
-                    //console.log('startY',startY);
+                //console.log('index',index)
+                if (index < 0) index = 0;
+                if (index >= col.items.length) index = col.items.length - 1;
 
-                    startTranslate = currentTranslate = fnGetTranslate(col.wrapper[0], 'y');
-                    //console.log('startTranslate', typeof startTranslate, startTranslate)
+                //set values
+                self.displayValue[colIndex] = col.value = col.values[index]; //存储最终要显示的值
+
+                //console.log(col.activeIndex,index)
+                if (col.activeIndex != index) {
+                    col.activeIndex = index;
+                    self.setValue();
                 }
 
-                /*touch move*/
-                function fnTouchMove(e) {
-                    if (!isTouched) return false;
-                    e.preventDefault();
-                    isTouched = true;
-
-                    currentY = e.type === 'touchmove' ? e.targetTouches ? e.targetTouches[0].pageY : e.originalEvent.targetTouches[0].pageY : e.pageY;
-                    movedY = currentY - startY;
-
-                    //偏移量
-                    currentTranslate = startTranslate + movedY;
-                    //console.log('currentTranslate',currentTranslate);
-                    if (currentTranslate > maxTranslate) currentTranslate = maxTranslate + itemHeight / 2; //向下拉取范围
-                    if (currentTranslate < minTranslate) currentTranslate = minTranslate - itemHeight / 2; //向上拉取范围
-
-                    //滑动
-                    fnTranslate(col.wrapper, currentTranslate, 200);
-                    col.highlightItem(null, currentTranslate);
-
-                }
-
-                /*touch end*/
-                function fnTouchEnd(e) {
-                    //console.log('fnTouchEnd')
-                    isTouched = isMoved = false;
-                    //偏移量
-                    currentTranslate = Math.round(currentTranslate / itemHeight) * itemHeight; //四舍五入
-                    if (currentTranslate > maxTranslate) currentTranslate = maxTranslate; //向下拉取范围
-                    if (currentTranslate < minTranslate) currentTranslate = minTranslate; //向上拉取范围
-
-                    //滑动
-                    fnTranslate(col.wrapper, currentTranslate, 200);
-
-                }
+                /*选中item*/
+                col.items.eq(index).addClass('picker-selected').siblings().removeClass('picker-selected');
+            };
 
 
-                /*选中默认值*/
-                col.setColTranslate(col.value);
+            /*处理绑定事件
+             * @param: action[String] on/off
+             * on-绑定  off-解绑
+             * */
+            col.handleEvents = function (action) {
+                col.container[action]($.events.start, fnTouchStart);
+                col.container[action]($.events.move, fnTouchMove);
+                col.container[action]($.events.end, fnTouchEnd);
+            };
 
-                /*绑定事件*/
-                col.handleEvents('on');
 
-            });
+            /*
+             * 备注：
+             * touches是当前屏幕上所有触摸点的列表;
+             * targetTouches是当前对象上所有触摸点的列表;
+             * changedTouches是涉及当前事件的触摸点的列表。
+             * */
+            /*touch start*/
+            function fnTouchStart(e) {
+                if (isMoved || isTouched) return false;
+                e.preventDefault();
+                isTouched = true;
+                startY = e.type === 'touchstart' ? e.targetTouches ? e.targetTouches[0].pageY : e.originalEvent.targetTouches[0].pageY : e.pageY;
+                //console.log('startY',startY);
+
+                startTranslate = currentTranslate = fnGetTranslate(col.wrapper[0], 'y');
+                //console.log('startTranslate', typeof startTranslate, startTranslate)
+            }
+
+            /*touch move*/
+            function fnTouchMove(e) {
+                if (!isTouched) return false;
+                e.preventDefault();
+                isTouched = true;
+                currentY = e.type === 'touchmove' ? e.targetTouches ? e.targetTouches[0].pageY : e.originalEvent.targetTouches[0].pageY : e.pageY;
+                movedY = currentY - startY;
+
+                //偏移量
+                currentTranslate = startTranslate + movedY;
+                //console.log('currentTranslate',currentTranslate);
+                if (currentTranslate > maxTranslate) currentTranslate = maxTranslate + itemHeight / 2; //向下拉取范围
+                if (currentTranslate < minTranslate) currentTranslate = minTranslate - itemHeight / 2; //向上拉取范围
+
+                //滑动
+                fnTranslate(col.wrapper, currentTranslate, 200);
+                col.highlightItem(null, currentTranslate);
+
+            }
+
+            /*touch end*/
+            function fnTouchEnd(e) {
+                //console.log('fnTouchEnd')
+                isTouched = isMoved = false;
+                //偏移量
+                currentTranslate = Math.round(currentTranslate / itemHeight) * itemHeight; //四舍五入
+                if (currentTranslate > maxTranslate) currentTranslate = maxTranslate; //向下拉取范围
+                if (currentTranslate < minTranslate) currentTranslate = minTranslate; //向上拉取范围
+
+                //滑动
+                fnTranslate(col.wrapper, currentTranslate, 200);
+
+            }
+
+
+            /*选中默认值*/
+            col.setColTranslate(col.value);
+
+            /*绑定事件*/
+            col.handleEvents('on');
+
         };
 
 
@@ -309,38 +344,50 @@
                 //WebKitCSSMatrix 是WebKit内核提供可计算transform的方法. 其他支持HTML5的浏览器也有各自的方法.
                 transformMatrix = new WebKitCSSMatrix(curStyle.webkitTransform === 'none' ? '' : curStyle.webkitTransform);
                 curTransform = (axis === 'x') ? transformMatrix.m41 : transformMatrix.m42;
-            }else {
+            } else {
                 transformMatrix = curStyle.MozTransform || curStyle.transform || curStyle.getPropertyValue('transform').replace('translate(', 'matrix(1, 0, 0, 1,');
                 matrix = transformMatrix.toString().split(',');
-                if (axis === 'x') curTransform = (matrix.length === 16)? parseFloat(matrix[12]) : parseFloat(matrix[4]);
-                if (axis === 'y') curTransform = (matrix.length === 16)? parseFloat(matrix[13]) : parseFloat(matrix[5]);
+                if (axis === 'x') curTransform = (matrix.length === 16) ? parseFloat(matrix[12]) : parseFloat(matrix[4]);
+                if (axis === 'y') curTransform = (matrix.length === 16) ? parseFloat(matrix[13]) : parseFloat(matrix[5]);
             }
 
             return curTransform || 0;
         }
 
-        /*fun: fnOnHtmlClick*/
+        /*fnOnHtmlClick*/
         function fnOnHtmlClick(e) {
-            if (elements.modal[0]) {
-                if (e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) self.close();
-            }
+            if (e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) self.close();
         }
 
-        /*bind events*/
-        $(document.body).on('click', '.close-picker', function () {
-            self.close();
-            !self.params.realTime && self.showResult();
-            self.params.callback && self.params.callback.call(self,{value: self.displayValue});
-        }).on('click', fnOnHtmlClick);
 
-        elements.input.on('click', function (e) {
-            e.stopPropagation();
-            self.open();
-        });
+        /*初始化*/
+        if (params.inputReadOnly) elements.input.attr('readonly', true);
 
-        if (!self.initialized) self.init();
+        /*
+         * input onClick
+         * */
+        if (!self.inline) {
+            $(document.body).on('click', fnOnHtmlClick);
+            elements.input.on('click', function (e) {
+                e.stopPropagation();
+                if (!self.opened) {
+                    var modal = $('.picker-modal.modal-in');
+                    modal.trigger('close');
+                    self.open();
+                }
+            });
+        }
 
     };
+
+
+    /*========================
+     * bind events
+     * =======================*/
+    $(document).on('click', '.close-picker', function () {
+        var modal = $('.picker-modal.modal-in');
+        modal.trigger('close');
+    });
 
 
     $.fn.picker = function (options) {
@@ -373,13 +420,13 @@
 
     var M = {
         today: new Date(),
-        formatNum: function (val) {
+        zeroFixed: function (val) {
             return (val && val < 10) ? '0' + parseInt(val) : '' + val;
         },
         makeArr: function (max, min) {
             var arr = [];
             for (var i = min || 1; i <= max; i++) {
-                arr.push(M.formatNum(i));
+                arr.push(M.zeroFixed(i));
             }
             return arr;
         },
@@ -389,7 +436,7 @@
         },
         formatDate: function (values, format) {
             for (var i = 0; i < values.length; i++) {
-                values[i] = M.formatNum(values[i]);
+                values[i] = M.zeroFixed(values[i]);
             }
             var o = {
                 "y+": values[0] || M.today.getFullYear(), //year
@@ -411,6 +458,12 @@
             }
             return format;
         },
+        DateStringToArr: function (str) {
+            var date = str ? new Date(str) : new Date();
+            return $.map([date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes()], function (item, index) {
+                return M.zeroFixed(item);
+            });
+        }
     };
 
     /*默认参数*/
@@ -418,15 +471,18 @@
         format: 'yyyy-MM-dd hh:mm', //日期字符串格式
         value: [],  //默认值，如：['2015', '12', '29', '19', '15']
         yearLimit: [1950, 2030], //年份范围
-        onChange: function (picker) {
-            var days = M.getDaysByYearAndMonth(picker.cols[0].value, picker.cols[1].value);
-            var currentValue = picker.cols[2].value;
-            if (currentValue > days.length) currentValue = days.length; //日
-            picker.cols[2].value = currentValue;
+        onChange: function (params) {
+            //console.log('params.cols[2]--->',JSON.stringify(params.cols[2]));
 
-            //console.log(picker.cols[0].value, picker.cols[1].value, picker.cols[2].value)
-            //console.log(picker.cols[2].setValue)
-            //picker.cols[2].setValue(currentValue);
+            var days = M.getDaysByYearAndMonth(params.cols[0].value, params.cols[1].value);
+            var currentValue = params.cols[2].value;
+            if (currentValue > days.length) currentValue = days.length; //日
+            params.cols[2].value = currentValue;
+
+            //console.log('params.cols[2].value---->',params.cols[2].value)
+            //console.log('typeof params.cols[2].setColTranslate--->',typeof params.cols[2].setColTranslate)
+            //params.cols[2].setColTranslate(currentValue);
+
         },
         formatValue: function (params) {
             return M.formatDate(params.value, params.format || defaults.format);
@@ -434,10 +490,8 @@
     };
 
     /*当前时间*/
-    defaults.value = $.map([M.today.getFullYear(), M.today.getMonth() + 1, M.today.getDate(), M.today.getHours(), M.today.getMinutes()], function (item, index) {
-        return M.formatNum(item);
-    });
-    console.log(defaults.value)
+    defaults.value = M.DateStringToArr();
+    //console.log(defaults.value)
 
     /*需要显示的列数*/
     defaults.cols = [
@@ -472,10 +526,15 @@
     $.fn.datetimePicker = function (options) {
         return this.each(function () {
             if (!this) return;
+            var $this = $(this);
+
+            var dateStr = $this[0].tagName.toLowerCase() === 'input' ? $this.val() : $this.text();
+            if (dateStr) defaults.value = M.DateStringToArr(dateStr);
+
             var params = $.extend({}, defaults, options || {});
-            //console.log(JSON.stringify(params))
-            if (options && options.value) $(this).val(M.formatDate(params.value, params.format));
-            $(this).picker(params);
+            //console.log($this)
+            if (options && options.value) $this.val(M.formatDate(params.value, params.format));
+            $this.picker(params);
         });
     };
 
