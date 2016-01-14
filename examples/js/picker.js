@@ -100,7 +100,7 @@
                         }, 400);
 
                         var response = {input: elements.input, value: self.displayValue};
-                        if(params.formatValue) response.string = params.formatValue(response);
+                        if (params.formatValue) response.string = params.formatValue(response);
                         //console.log(response)
                         if (!params.atOnce || params.onClose) params.onClose.call(elements.input, response);//关闭后的回调函数
 
@@ -425,7 +425,7 @@
         },
         makeArr: function (max, min) {
             var arr = [];
-            for (var i = min || 1; i <= max; i++) {
+            for (var i = min || 0; i <= max; i++) {
                 arr.push(M.zeroFixed(i));
             }
             return arr;
@@ -505,19 +505,19 @@
         },
         {
             /*1-31日*/
-            values: M.makeArr(31)
+            values: M.makeArr(31, 1)
         },
         {
             /*24时*/
-            values: M.makeArr(24, 0)
+            values: M.makeArr(24)
         },
         {
             /*60分*/
-            values: M.makeArr(60, 0)
+            values: M.makeArr(60)
         },
         {
             /*60秒*/
-            values: M.makeArr(60, 0)
+            values: M.makeArr(60)
         }
     ];
 
