@@ -541,8 +541,7 @@
             if (dateStr) params.value = M.DateStringToArr(dateStr);
 
             //处理dateArr
-            params.value = Array.prototype.slice.call(params.value, 0, params.level);
-            console.log(params.value)
+            params.value = Array.prototype.slice.call(params.value, 0, params.level); //console.log(params.value)
 
             $this.picker(params);
         });
