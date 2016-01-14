@@ -99,10 +99,14 @@
                             thisModal.remove();
                         }, 400);
 
-                        var response = {input: elements.input, value: self.displayValue};
-                        if (params.formatValue) response.string = params.formatValue(response);
-                        //console.log(response)
-                        if (!params.atOnce || params.onClose) params.onClose.call(elements.input, response);//关闭后的回调函数
+                        (function () {
+                            if (!params.atOnce || params.onClose){
+                                var args = {format: params.format, value: self.displayValue};  //args
+                                var result = {input: elements.input, value: self.displayValue}; //return result obj
+                                if (params.formatValue) result.string = params.formatValue(args); //console.log(result)
+                                params.onClose.call(elements.input, result);//关闭后的回调函数
+                            }
+                        })();
 
                     });
                 }
@@ -471,6 +475,7 @@
         format: 'yyyy-MM-dd hh:mm', //日期字符串格式
         value: [],  //默认值，如：['2015', '12', '29', '19', '15']
         yearLimit: [1950, 2030], //年份范围
+        level: 5,  //日期默认可选层级
         onChange: function (params) {
             //console.log('params.cols[2]--->',JSON.stringify(params.cols[2]));
 
@@ -534,6 +539,10 @@
 
             var dateStr = $this[0].tagName.toLowerCase() === 'input' ? $this.val() : $this.text();  //dateStr = '';
             if (dateStr) params.value = M.DateStringToArr(dateStr);
+
+            //处理dateArr
+            params.value = Array.prototype.slice.call(params.value, 0, params.level);
+            console.log(params.value)
 
             $this.picker(params);
         });
