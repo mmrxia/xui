@@ -509,15 +509,15 @@
         },
         {
             /*24时*/
-            values: M.makeArr(24)
+            values: M.makeArr(24, 0)
         },
         {
             /*60分*/
-            values: M.makeArr(60)
+            values: M.makeArr(60, 0)
         },
         {
             /*60秒*/
-            values: M.makeArr(60)
+            values: M.makeArr(60, 0)
         }
     ];
 
