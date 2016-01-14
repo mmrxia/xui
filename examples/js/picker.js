@@ -528,11 +528,11 @@
             if (!this) return;
             var $this = $(this);
 
-            var dateStr = $this[0].tagName.toLowerCase() === 'input' ? $this.val() : $this.text();
-            if (dateStr) defaults.value = M.DateStringToArr(dateStr);
-
             var params = $.extend({}, defaults, options || {});
-            //console.log($this)
+
+            var dateStr = $this[0].tagName.toLowerCase() === 'input' ? $this.val() : $this.text();  //dateStr = '';
+            if (dateStr) params.value = M.DateStringToArr(dateStr);
+
             if (options && options.value) $this.val(M.formatDate(params.value, params.format));
             $this.picker(params);
         });
