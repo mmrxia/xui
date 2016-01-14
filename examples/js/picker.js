@@ -421,7 +421,7 @@
     var M = {
         today: new Date(),
         zeroFixed: function (val) {
-            return (val && val < 10) ? '0' + parseInt(val) : '' + val;
+            return parseInt(val) < 10 ? '0' + parseInt(val) : '' + val;
         },
         makeArr: function (max, min) {
             var arr = [];
