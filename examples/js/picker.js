@@ -506,7 +506,7 @@
         },
         {
             /*1-12月份*/
-            values: M.makeArr(12)
+            values: M.makeArr(12, 1)
         },
         {
             /*1-31日*/
