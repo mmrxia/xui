@@ -25,20 +25,22 @@
         var defaults = {
             cols: [], //列
             atOnce: true,  //实时显示文本域中的值
+            suffix: true,  //时候显示后缀，如日期的年月日时分秒
             onOpen: null, //打开模态框后的回调行数
             onClose: null, //关闭模态框后的回调行数，此时realTime为false
             inputReadOnly: true, //input是否只读
+            toolbarTitle: '请选择',  //关闭按钮文案
             toolbarCloseText: '确定'  //关闭按钮文案
         };
 
-        /*头部dom结构*/
-        defaults.toolbarTpl = [
-            '<header class="tool-bar">', '<h1 class="title">请选择</h1>',
-            '<button class="btn close-picker">' + (defaults.toolbarCloseText || "确定") + '</button>', '</header>'
-        ].join('');
-
         /*参数*/
         var params = $.extend({}, defaults, options);  //console.log(params)
+
+        /*头部dom结构*/
+        params.toolbarTpl = [
+            '<header class="tool-bar">', '<h1 class="title">' + params.toolbarTitle + '</h1>',
+            '<button class="close-picker">' + params.toolbarCloseText + '</button>', '</header>'
+        ].join('');
 
         self.initialized = false; //初始化过
         self.opened = false; //模态框是否已打开
@@ -70,7 +72,8 @@
                     if (colsLen && i > colsLen - 1) return false;      //按照初始值设置列
                     arr.push('<div class="picker-items-col"><div class="picker-items-col-wrapper">');
                     $.each(v.values, function (m, n) {
-                        arr.push('<div class="picker-item">' + n + '</div>');
+                        var text = params.suffix && v.suffix ? n + v.suffix : n;
+                        arr.push('<div class="picker-item">' + text + '</div>');
                     });
                     arr.push('</div></div>');
                 });
@@ -100,7 +103,7 @@
                         }, 400);
 
                         (function () {
-                            if (!params.atOnce || params.onClose){
+                            if (!params.atOnce || params.onClose) {
                                 var args = {format: params.format, value: self.displayValue};  //args
                                 var result = {input: elements.input, value: self.displayValue}; //return result obj
                                 if (params.formatValue) result.string = params.formatValue(args); //console.log(result)
@@ -502,27 +505,33 @@
     defaults.cols = [
         {
             /*年份范围*/
-            values: M.makeArr(defaults.yearLimit[1], defaults.yearLimit[0])
+            values: M.makeArr(defaults.yearLimit[1], defaults.yearLimit[0]),
+            suffix: '年'
         },
         {
             /*1-12月份*/
-            values: M.makeArr(12, 1)
+            values: M.makeArr(12, 1),
+            suffix: '月'
         },
         {
             /*1-31日*/
-            values: M.makeArr(31, 1)
+            values: M.makeArr(31, 1),
+            suffix: '日'
         },
         {
             /*24时*/
-            values: M.makeArr(24)
+            values: M.makeArr(24),
+            suffix: '时'
         },
         {
             /*60分*/
-            values: M.makeArr(60)
+            values: M.makeArr(60),
+            suffix: '分'
         },
         {
             /*60秒*/
-            values: M.makeArr(60)
+            values: M.makeArr(60),
+            suffix: '秒'
         }
     ];
 
