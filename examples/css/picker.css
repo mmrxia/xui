@@ -16,14 +16,14 @@
 .picker-modal .tool-bar .close-picker{position:absolute;top:0;right:0;padding:0 20px;height:auto;outline:0;border:0;background-color:#fff;color:#3BBC9C;font-size:14px;line-height:36px;cursor:pointer}
 
 /*inner items*/
-.picker-items{position:relative;height: 180px;display:-webkit-box;display:-webkit-flex;display:flex;text-align:center;font-size:16px;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-mask-box-image:-webkit-linear-gradient(bottom,transparent,transparent 5%,#fff 20%,#fff 80%,transparent 95%,transparent);-webkit-mask-box-image:linear-gradient(to top,transparent,transparent 5%,#fff 20%,#fff 80%,transparent 95%,transparent)}
+.picker-items{padding: 0 5px;position:relative;height: 180px;display:-webkit-box;display:-webkit-flex;display:flex;text-align:center;font-size:16px;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-mask-box-image:-webkit-linear-gradient(bottom,transparent,transparent 5%,#fff 20%,#fff 80%,transparent 95%,transparent);-webkit-mask-box-image:linear-gradient(to top,transparent,transparent 5%,#fff 20%,#fff 80%,transparent 95%,transparent)}
 
 /*ÁÐ*/
 .picker-items-col{position:relative;overflow: hidden;max-height: 100%;cursor: pointer;-webkit-box-flex: 1;-webkit-flex: 1;flex:1;}
 .picker-items-col-wrapper{-webkit-transition:300ms ease-out;transition:300ms ease-out;}
 
 /*Ñ¡Ïî*/
-.picker-item{position:relative;top:0;left:0;overflow:hidden;box-sizing:border-box;padding:0 10px;width:100%;height:36px;color:#777;text-overflow:ellipsis;white-space:nowrap;line-height:36px;}
+.picker-item{position:relative;top:0;left:0;overflow:hidden;box-sizing:border-box;width:100%;height:36px;color:#777;text-overflow:ellipsis;white-space:nowrap;line-height:36px;}
 .picker-item.picker-selected{color:#3BBC9D}
-.picker-center-highlight{position:absolute;top:50%;left:0;margin-top:-18px;width:100%;height:36px;border: 1px solid #dcdcdc;}
+.picker-center-highlight{position:absolute;top:50%;left:0;margin-top:-18px;width:100%;height:36px;border-top: 1px solid #dcdcdc;border-bottom: 1px solid #dcdcdc;}
 .picker-center-highlight:before{content: '';position: absolute;width: 3px;height: 100%;background-color: #3BBC9D;left: 0;top: 0;}

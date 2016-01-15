@@ -374,7 +374,7 @@
          * input onClick
          * */
         if (!self.inline) {
-            $(window).on('click', fnOnHtmlClick);
+            $(window).on('touchend', fnOnHtmlClick);
             elements.input.on('click', function (e) {
                 e.stopPropagation();
                 if (!self.opened) {
