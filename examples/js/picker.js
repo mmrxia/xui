@@ -143,20 +143,16 @@
          * */
         self.setValue = function () {
             if (params.onChange) {
-                //变更值，联动处理
-                params.onChange(params);
-                //console.log(JSON.stringify(params.cols))
+                params.onChange(params); //变更值，联动处理
             }
             params.atOnce && self.showResult();
         };
 
         /*input赋值*/
         self.showResult = function () {
-            //console.log(elements.adang)
             var result = {value: self.displayValue};
             var resultValue = params.formatValue ? params.formatValue(result) : result.value.join(' ');
-            var method = elements.input[0].tagName.toLowerCase() === 'input' ? 'val' : 'text';
-            //console.log(elements.input[0].outerHTML)
+            var method = elements.input[0].tagName.toLowerCase() === 'input' ? 'val' : 'text';       //console.log(elements.input[0].outerHTML)
             elements.input[method](resultValue);
         };
 
@@ -196,9 +192,7 @@
              * 设置该列的位置
              * */
             col.setColTranslate = function (val) {
-                console.log(val)
-                var activeIndex = col.activeIndex = $.inArray(val, col.values);
-                //console.log('init activeIndex',activeIndex);
+                var activeIndex = col.activeIndex = $.inArray(val, col.values);    //console.log('init activeIndex',activeIndex);
                 var translateY = -activeIndex * itemHeight + maxTranslate;
                 fnTranslate(col.wrapper, translateY, 200);
                 col.highlightItem(activeIndex, translateY);
@@ -217,9 +211,7 @@
                 self.displayValue[colIndex] = col.value = col.values[index]; //存储最终要显示的值
 
                 //console.log(col.activeIndex,index)
-                if (col.activeIndex != index) {
-                    col.activeIndex = index;
-                }
+                if (col.activeIndex != index) col.activeIndex = index;
 
                 /*选中item*/
                 col.items.eq(index).addClass('picker-selected').siblings().removeClass('picker-selected');
@@ -410,9 +402,10 @@
 
             var picker = $this.data("picker");
             if (!picker) {
+                var method = $this[0].tagName.toLowerCase() === 'input'? 'val' : 'text';
                 var params = $.extend({
                     input: $this,
-                    value: $this.val() ? $this.val().split(' ') : ''
+                    value: $this[method]().split(' ')
                 }, options || {});
                 picker = new Picker(params);
                 $this.data("picker", picker);
@@ -541,10 +534,11 @@
             var $this = $(this);
 
             var params = $.extend({}, defaults, options || {});
+            var method = $this[0].tagName.toLowerCase() === 'input'? 'val' : 'text';
 
-            if (options && options.value) $this.val(M.formatDate(options.value, params.format));
+            if (options && options.value) $this[method](M.formatDate(options.value, params.format));
 
-            var dateStr = $this[0].tagName.toLowerCase() === 'input' ? $this.data('val') || $this.val() : $this.text();  //dateStr = '';
+            var dateStr = $this.data('val') || $this[method]();  //dateStr = '';
             if (dateStr) params.value = M.DateStringToArr(dateStr);
 
             //处理dateArr
