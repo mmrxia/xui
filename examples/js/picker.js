@@ -363,6 +363,7 @@
 
         /*fnOnHtmlClick*/
         function fnOnHtmlClick(e) {
+            console.log(e.target)
             if (e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) self.close();
         }
 
