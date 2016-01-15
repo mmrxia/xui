@@ -17,7 +17,8 @@
     $.events = {
         start: $.support.touch ? 'touchstart' : 'mousedown',
         move: $.support.touch ? 'touchmove' : 'mousemove',
-        end: $.support.touch ? 'touchend' : 'mouseup'
+        end: $.support.touch ? 'touchend' : 'mouseup',
+        click: $.support.touch ? 'touchend' : 'click'
     };
 
     var Picker = function (options) {
@@ -25,20 +26,22 @@
         var defaults = {
             cols: [], //列
             atOnce: true,  //实时显示文本域中的值
+            suffix: true,  //时候显示后缀，如日期的年月日时分秒
             onOpen: null, //打开模态框后的回调行数
             onClose: null, //关闭模态框后的回调行数，此时realTime为false
             inputReadOnly: true, //input是否只读
+            toolbarTitle: '请选择',  //标题
             toolbarCloseText: '确定'  //关闭按钮文案
         };
 
-        /*头部dom结构*/
-        defaults.toolbarTpl = [
-            '<header class="tool-bar">', '<h1 class="title">请选择</h1>',
-            '<button class="btn close-picker">' + (defaults.toolbarCloseText || "确定") + '</button>', '</header>'
-        ].join('');
-
         /*参数*/
         var params = $.extend({}, defaults, options);  //console.log(params)
+
+        /*头部dom结构*/
+        params.toolbarTpl = [
+            '<header class="tool-bar">', '<h1 class="title">' + params.toolbarTitle + '</h1>',
+            '<button class="close-picker">' + params.toolbarCloseText + '</button>', '</header>'
+        ].join('');
 
         self.initialized = false; //初始化过
         self.opened = false; //模态框是否已打开
@@ -70,7 +73,8 @@
                     if (colsLen && i > colsLen - 1) return false;      //按照初始值设置列
                     arr.push('<div class="picker-items-col"><div class="picker-items-col-wrapper">');
                     $.each(v.values, function (m, n) {
-                        arr.push('<div class="picker-item">' + n + '</div>');
+                        var text = params.suffix && v.suffix ? n + v.suffix : n;
+                        arr.push('<div class="picker-item">' + text + '</div>');
                     });
                     arr.push('</div></div>');
                 });
@@ -99,10 +103,14 @@
                             thisModal.remove();
                         }, 400);
 
-                        var response = {input: elements.input, value: self.displayValue};
-                        if (params.formatValue) response.string = params.formatValue(response);
-                        //console.log(response)
-                        if (!params.atOnce || params.onClose) params.onClose.call(elements.input, response);//关闭后的回调函数
+                        (function () {
+                            if (!params.atOnce || params.onClose) {
+                                var args = {format: params.format, value: self.displayValue};  //args
+                                var result = {input: elements.input, value: self.displayValue}; //return result obj
+                                if (params.formatValue) result.string = params.formatValue(args); //console.log(result)
+                                params.onClose.call(elements.input, result);//关闭后的回调函数
+                            }
+                        })();
 
                     });
                 }
@@ -135,20 +143,16 @@
          * */
         self.setValue = function () {
             if (params.onChange) {
-                //变更值，联动处理
-                params.onChange(params);
-                //console.log(JSON.stringify(params.cols))
+                params.onChange(params); //变更值，联动处理
             }
             params.atOnce && self.showResult();
         };
 
         /*input赋值*/
         self.showResult = function () {
-            //console.log(elements.adang)
             var result = {value: self.displayValue};
             var resultValue = params.formatValue ? params.formatValue(result) : result.value.join(' ');
-            var method = elements.input[0].tagName.toLowerCase() === 'input' ? 'val' : 'text';
-            //console.log(elements.input[0].outerHTML)
+            var method = elements.input[0].tagName.toLowerCase() === 'input' ? 'val' : 'text';       //console.log(elements.input[0].outerHTML)
             elements.input[method](resultValue);
         };
 
@@ -188,10 +192,9 @@
              * 设置该列的位置
              * */
             col.setColTranslate = function (val) {
-                var activeIndex = col.activeIndex = $.inArray(val, col.values);
-                //console.log('init activeIndex',activeIndex);
+                var activeIndex = col.activeIndex = $.inArray(val, col.values);    //console.log('init activeIndex',activeIndex);
                 var translateY = -activeIndex * itemHeight + maxTranslate;
-                fnTranslate(col.wrapper, translateY);
+                fnTranslate(col.wrapper, translateY, 200);
                 col.highlightItem(activeIndex, translateY);
             };
 
@@ -208,10 +211,7 @@
                 self.displayValue[colIndex] = col.value = col.values[index]; //存储最终要显示的值
 
                 //console.log(col.activeIndex,index)
-                if (col.activeIndex != index) {
-                    col.activeIndex = index;
-                    self.setValue();
-                }
+                if (col.activeIndex != index) col.activeIndex = index;
 
                 /*选中item*/
                 col.items.eq(index).addClass('picker-selected').siblings().removeClass('picker-selected');
@@ -278,6 +278,7 @@
 
                 //滑动
                 fnTranslate(col.wrapper, currentTranslate, 200);
+                self.setValue(); //重新定位值
 
             }
 
@@ -356,7 +357,10 @@
 
         /*fnOnHtmlClick*/
         function fnOnHtmlClick(e) {
-            if (e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) self.close();
+            if (e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) {
+                var modal = $('.picker-modal.modal-in');
+                modal.trigger('close');
+            }
         }
 
 
@@ -367,8 +371,8 @@
          * input onClick
          * */
         if (!self.inline) {
-            $(document.body).on('click', fnOnHtmlClick);
-            elements.input.on('click', function (e) {
+            $(window).off().on($.events.click, fnOnHtmlClick);
+            elements.input.off().on($.events.click, function (e) {
                 e.stopPropagation();
                 if (!self.opened) {
                     var modal = $('.picker-modal.modal-in');
@@ -384,7 +388,7 @@
     /*========================
      * bind events
      * =======================*/
-    $(document).on('click', '.close-picker', function () {
+    $(document).off().on($.events.click, '.close-picker', function () {
         var modal = $('.picker-modal.modal-in');
         modal.trigger('close');
     });
@@ -398,9 +402,10 @@
 
             var picker = $this.data("picker");
             if (!picker) {
+                var method = $this[0].tagName.toLowerCase() === 'input'? 'val' : 'text';
                 var params = $.extend({
                     input: $this,
-                    value: $this.val() ? $this.val().split(' ') : ''
+                    value: $this[method]().split(' ')
                 }, options || {});
                 picker = new Picker(params);
                 $this.data("picker", picker);
@@ -431,8 +436,7 @@
             return arr;
         },
         getDaysByYearAndMonth: function (year, month) {
-            var max = new Date(new Date(year, month, 1) - 1).getDate();
-            return M.makeArr(max);
+            return new Date(new Date(year, month, 1) - 1).getDate();
         },
         formatDate: function (values, format) {
             for (var i = 0; i < values.length; i++) {
@@ -471,18 +475,13 @@
         format: 'yyyy-MM-dd hh:mm', //日期字符串格式
         value: [],  //默认值，如：['2015', '12', '29', '19', '15']
         yearLimit: [1950, 2030], //年份范围
+        level: 5,  //日期默认可选层级
         onChange: function (params) {
-            //console.log('params.cols[2]--->',JSON.stringify(params.cols[2]));
-
-            var days = M.getDaysByYearAndMonth(params.cols[0].value, params.cols[1].value);
+            var days = M.getDaysByYearAndMonth(params.cols[0].value, params.cols[1].value);   //当月天数
             var currentValue = params.cols[2].value;
-            if (currentValue > days.length) currentValue = days.length; //日
+            if (currentValue > days) currentValue = days.toString(); //日
             params.cols[2].value = currentValue;
-
-            //console.log('params.cols[2].value---->',params.cols[2].value)
-            //console.log('typeof params.cols[2].setColTranslate--->',typeof params.cols[2].setColTranslate)
-            //params.cols[2].setColTranslate(currentValue);
-
+            params.cols[2].setColTranslate(currentValue);
         },
         formatValue: function (params) {
             return M.formatDate(params.value, params.format || defaults.format);
@@ -497,27 +496,33 @@
     defaults.cols = [
         {
             /*年份范围*/
-            values: M.makeArr(defaults.yearLimit[1], defaults.yearLimit[0])
+            values: M.makeArr(defaults.yearLimit[1], defaults.yearLimit[0]),
+            suffix: '年'
         },
         {
             /*1-12月份*/
-            values: M.makeArr(12)
+            values: M.makeArr(12, 1),
+            suffix: '月'
         },
         {
             /*1-31日*/
-            values: M.makeArr(31, 1)
+            values: M.makeArr(31, 1),
+            suffix: '日'
         },
         {
             /*24时*/
-            values: M.makeArr(24)
+            values: M.makeArr(23),
+            suffix: '时'
         },
         {
             /*60分*/
-            values: M.makeArr(60)
+            values: M.makeArr(59),
+            suffix: '分'
         },
         {
             /*60秒*/
-            values: M.makeArr(60)
+            values: M.makeArr(59),
+            suffix: '秒'
         }
     ];
 
@@ -529,11 +534,15 @@
             var $this = $(this);
 
             var params = $.extend({}, defaults, options || {});
+            var method = $this[0].tagName.toLowerCase() === 'input'? 'val' : 'text';
 
-            if (options && options.value) $this.val(M.formatDate(options.value, params.format));
+            if (options && options.value) $this[method](M.formatDate(options.value, params.format));
 
-            var dateStr = $this[0].tagName.toLowerCase() === 'input' ? $this.val() : $this.text();  //dateStr = '';
+            var dateStr = $this.data('val') || $this[method]();  //dateStr = '';
             if (dateStr) params.value = M.DateStringToArr(dateStr);
+
+            //处理dateArr
+            params.value = Array.prototype.slice.call(params.value, 0, params.level); //console.log(params.value)
 
             $this.picker(params);
         });
