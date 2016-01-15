@@ -523,7 +523,7 @@
         },
         {
             /*24时*/
-            values: M.makeArr(24),
+            values: M.makeArr(23),
             suffix: '时'
         },
         {
