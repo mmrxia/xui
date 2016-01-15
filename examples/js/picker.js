@@ -537,7 +537,7 @@
 
             if (options && options.value) $this.val(M.formatDate(options.value, params.format));
 
-            var dateStr = $this[0].tagName.toLowerCase() === 'input' ? $this.val() : $this.text();  //dateStr = '';
+            var dateStr = $this[0].tagName.toLowerCase() === 'input' ? $this.data('val') || $this.val() : $this.text();  //dateStr = '';
             if (dateStr) params.value = M.DateStringToArr(dateStr);
 
             //处理dateArr
