@@ -196,10 +196,11 @@
              * 设置该列的位置
              * */
             col.setColTranslate = function (val) {
+                console.log(val)
                 var activeIndex = col.activeIndex = $.inArray(val, col.values);
                 //console.log('init activeIndex',activeIndex);
                 var translateY = -activeIndex * itemHeight + maxTranslate;
-                fnTranslate(col.wrapper, translateY);
+                fnTranslate(col.wrapper, translateY, 200);
                 col.highlightItem(activeIndex, translateY);
             };
 
@@ -218,7 +219,6 @@
                 //console.log(col.activeIndex,index)
                 if (col.activeIndex != index) {
                     col.activeIndex = index;
-                    self.setValue();
                 }
 
                 /*选中item*/
@@ -286,6 +286,7 @@
 
                 //滑动
                 fnTranslate(col.wrapper, currentTranslate, 200);
+                self.setValue(); //重新定位值
 
             }
 
@@ -381,7 +382,6 @@
             $(window).off().on($.events.click, fnOnHtmlClick);
             elements.input.off().on($.events.click, function (e) {
                 e.stopPropagation();
-                console.log(self.opened)
                 if (!self.opened) {
                     var modal = $('.picker-modal.modal-in');
                     modal.trigger('close');
@@ -443,8 +443,7 @@
             return arr;
         },
         getDaysByYearAndMonth: function (year, month) {
-            var max = new Date(new Date(year, month, 1) - 1).getDate();
-            return M.makeArr(max);
+            return new Date(new Date(year, month, 1) - 1).getDate();
         },
         formatDate: function (values, format) {
             for (var i = 0; i < values.length; i++) {
@@ -485,17 +484,11 @@
         yearLimit: [1950, 2030], //年份范围
         level: 5,  //日期默认可选层级
         onChange: function (params) {
-            //console.log('params.cols[2]--->',JSON.stringify(params.cols[2]));
-
-            var days = M.getDaysByYearAndMonth(params.cols[0].value, params.cols[1].value);
+            var days = M.getDaysByYearAndMonth(params.cols[0].value, params.cols[1].value);   //当月天数
             var currentValue = params.cols[2].value;
-            if (currentValue > days.length) currentValue = days.length; //日
+            if (currentValue > days) currentValue = days.toString(); //日
             params.cols[2].value = currentValue;
-
-            //console.log('params.cols[2].value---->',params.cols[2].value)
-            //console.log('typeof params.cols[2].setColTranslate--->',typeof params.cols[2].setColTranslate)
-            //params.cols[2].setColTranslate(currentValue);
-
+            params.cols[2].setColTranslate(currentValue);
         },
         formatValue: function (params) {
             return M.formatDate(params.value, params.format || defaults.format);
