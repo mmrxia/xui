@@ -17,7 +17,8 @@
     $.events = {
         start: $.support.touch ? 'touchstart' : 'mousedown',
         move: $.support.touch ? 'touchmove' : 'mousemove',
-        end: $.support.touch ? 'touchend' : 'mouseup'
+        end: $.support.touch ? 'touchend' : 'mouseup',
+        click: $.support.touch ? 'touchend' : 'click'
     };
 
     var Picker = function (options) {
@@ -29,7 +30,7 @@
             onOpen: null, //打开模态框后的回调行数
             onClose: null, //关闭模态框后的回调行数，此时realTime为false
             inputReadOnly: true, //input是否只读
-            toolbarTitle: '请选择',  //关闭按钮文案
+            toolbarTitle: '请选择',  //标题
             toolbarCloseText: '确定'  //关闭按钮文案
         };
 
@@ -377,9 +378,10 @@
          * input onClick
          * */
         if (!self.inline) {
-            $(window).off().on('click touchend', fnOnHtmlClick);
-            elements.input.on('click', function (e) {
+            $(window).off().on($.events.click, fnOnHtmlClick);
+            elements.input.off().on($.events.click, function (e) {
                 e.stopPropagation();
+                console.log(self.opened)
                 if (!self.opened) {
                     var modal = $('.picker-modal.modal-in');
                     modal.trigger('close');
@@ -394,7 +396,7 @@
     /*========================
      * bind events
      * =======================*/
-    $(document).on('click', '.close-picker', function () {
+    $(document).off().on($.events.click, '.close-picker', function () {
         var modal = $('.picker-modal.modal-in');
         modal.trigger('close');
     });
