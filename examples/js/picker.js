@@ -374,7 +374,7 @@
          * input onClick
          * */
         if (!self.inline) {
-            $(document.body).on('click', fnOnHtmlClick);
+            $(window).on('click', fnOnHtmlClick);
             elements.input.on('click', function (e) {
                 e.stopPropagation();
                 if (!self.opened) {
