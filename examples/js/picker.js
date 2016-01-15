@@ -528,12 +528,12 @@
         },
         {
             /*60分*/
-            values: M.makeArr(60),
+            values: M.makeArr(59),
             suffix: '分'
         },
         {
             /*60秒*/
-            values: M.makeArr(60),
+            values: M.makeArr(59),
             suffix: '秒'
         }
     ];
