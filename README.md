@@ -11,7 +11,7 @@
 将陆续实现多种主题风格，敬请期待...
 
 #API文档
-https://cdn.rawgit.com/mmrxia/xui/master/doc.html
+https://rawgit.com/mmrxia/xui/master/doc.html
 
 #示例
 日历选择 https://rawgit.com/mmrxia/xui/dev/examples/date-picker.html
