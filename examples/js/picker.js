@@ -363,8 +363,10 @@
 
         /*fnOnHtmlClick*/
         function fnOnHtmlClick(e) {
-            console.log(e.target)
-            if (e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) self.close();
+            if (e.target != elements.input[0] && !$(e.target).closest('.picker-modal')[0]) {
+                var modal = $('.picker-modal.modal-in');
+                modal.trigger('close');
+            }
         }
 
 
@@ -375,7 +377,7 @@
          * input onClick
          * */
         if (!self.inline) {
-            $(window).on('touchend', fnOnHtmlClick);
+            $(window).off().on('click touchend', fnOnHtmlClick);
             elements.input.on('click', function (e) {
                 e.stopPropagation();
                 if (!self.opened) {
