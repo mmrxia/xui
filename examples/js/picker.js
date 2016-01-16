@@ -536,10 +536,17 @@
             var params = $.extend({}, defaults, options || {});
             var method = $this[0].tagName.toLowerCase() === 'input'? 'val' : 'text';
 
-            if (options && options.value) $this[method](M.formatDate(options.value, params.format));
-
-            var dateStr = $this.data('val') || $this[method]();  //dateStr = '';
-            if (dateStr) params.value = M.DateStringToArr(dateStr);
+            /*
+            * 初始化日期params.value优先级为
+            * option.value > data('val') > val()/text() > default.value
+            * */
+            if (options && options.value){
+                $this[method](M.formatDate(options.value, params.format));
+            }else{
+                var dateStr = $this.data('val') || $this[method]();  //dateStr = '';
+                dateStr = $.trim(dateStr); //去掉首位空白字符
+                if (dateStr) params.value = M.DateStringToArr(dateStr);
+            }
 
             //处理dateArr
             params.value = Array.prototype.slice.call(params.value, 0, params.level); //console.log(params.value)
