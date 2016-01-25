@@ -28,8 +28,9 @@
                                     <div class="item-title label">时间日期</div>
                                     <div class="item-input">
                                         <!--日期输入目标容器-->
-                                        <input type="text" placeholder="请选择日期" id='datetime-picker' value="" readonly />
+                                        <input type="text" placeholder="请选择日期" id='datetime-picker' readonly />
                                         <input type="text" placeholder="请选择日期" id='datetime-picker-2' value="2015/12/12 12:00" readonly />
+                                        <input type="text" placeholder="请选择日期" id='datetime-picker-1' readonly />
                                     </div>
                                 </div>
                             </div>
@@ -53,12 +54,21 @@
     <script>
         $(function () {
             $("#datetime-picker,#datetime-picker-2").datetimePicker();
+            $("#datetime-picker-1").datetimePicker({
+                format: 'yyyy/MM/dd',   //最终要返回的日期字符串格式
+                level: 3,    //日期默认可选层级
+                atOnce: false,      //实时显示文本域中的值
+                onConfirm: function (res) {
+                    console.log("confirm", res)
+                    res.input.val(res.string);
+                }
+            });
             $("#datetime-picker-3").datetimePicker({
                 format: 'yyyy/MM/dd',   //最终要返回的日期字符串格式
                 level: 3,    //日期默认可选层级
                 atOnce: false,      //实时显示文本域中的值
                 onClose: function (res) {
-                    console.log(res)
+                    console.log('close', res)
                     res.input.text(res.string);
                 }
             });
