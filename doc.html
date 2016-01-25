@@ -59,6 +59,44 @@
     });
 &lt;/script&gt;</code></pre>
                 </div>
+                <div>
+                    <p>API:</p>
+                    <pre><code class="language-javascript">示例:
+&lt;script&gt;
+$("#datetime-picker").datetimePicker({
+value: ['2015', '12', '29', '19', '15']
+});
+&lt;/script&gt;
+
+#源码解析：
+/* Picker 默认参数：*/
+var defaults = {
+    cols: [], //列
+    atOnce: true,  //实时显示文本域中的值
+    suffix: true,  //时候显示后缀，如日期的年月日时分秒
+    onOpen: null, //打开模态框后的回调行数
+    onClose: null, //关闭模态框后的回调行数，此时atOnce为false
+    onConfirm: null, //点击右边确定按钮执行的回调
+    inputReadOnly: true, //input是否只读
+    toolbarTitle: '请选择',  //标题
+    toolbarCloseText: '确定'  //关闭按钮文案
+};
+
+/*
+ * DatePicker api:
+ * 初始化日期params.value优先级为
+ * option.value > data('val') > val()/text() > default.value
+ * */
+
+/*默认参数*/
+var defaults = {
+    format: 'yyyy-MM-dd hh:mm', //日期字符串格式
+    value: [],  //默认值，如：['2015', '12', '29', '19', '15']
+    yearLimit: [1950, 2030], //年份范围
+    level: 5  //日期默认可选层级
+}
+                    </code></pre>
+                </div>
             </article>
         </div>
         <div class="device-content">
