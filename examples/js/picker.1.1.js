@@ -1,13 +1,13 @@
 /*
  * picker.js  v1.1
- * ios·ç¸ñ¶àÁĞÑ¡Ôñ¹¦ÄÜ×é¼ş£¬ÈçÈÕÆÚ¡¢Í¨Ñ¶Â¼¡¢Ê¡ÊĞÇøµÈ
+ * iosé£æ ¼å¤šåˆ—é€‰æ‹©åŠŸèƒ½ç»„ä»¶ï¼Œå¦‚æ—¥æœŸã€é€šè®¯å½•ã€çœå¸‚åŒºç­‰
  * by xqs @2016
  * */
 
 ;
 (function () {
 
-    /*³£ÓÃ·½·¨*/
+    /*å¸¸ç”¨æ–¹æ³•*/
     var M = {
         today: new Date(),
         zeroFixed: function (val) {
@@ -60,13 +60,13 @@
     (function ($) {
         'use strict';
 
-        /*¹¤¾ß:Ö§³ÖÅĞ¶Ï*/
+        /*å·¥å…·:æ”¯æŒåˆ¤æ–­*/
         $.support = (function () {
             return {
-                touch: !!('ontouchstart' in window)     //ÊÇ·ñÖ§³Ötouch
+                touch: !!('ontouchstart' in window)     //æ˜¯å¦æ”¯æŒtouch
             }
         })();
-        /*µ±Ç°×´Ì¬Ö§³ÖµÄÊÂ¼ş*/
+        /*å½“å‰çŠ¶æ€æ”¯æŒçš„äº‹ä»¶*/
         $.events = {
             start: $.support.touch ? 'touchstart' : 'mousedown',
             move: $.support.touch ? 'touchmove' : 'mousemove',
@@ -77,38 +77,38 @@
         var Picker = function (options) {
             var self = this;
             var defaults = {
-                cols: [], //ÁĞ
-                atOnce: true,  //ÊµÊ±ÏÔÊ¾ÎÄ±¾ÓòÖĞµÄÖµ
-                suffix: true,  //Ê±ºòÏÔÊ¾ºó×º£¬ÈçÈÕÆÚµÄÄêÔÂÈÕÊ±·ÖÃë
-                onOpen: null, //´ò¿ªÄ£Ì¬¿òºóµÄ»Øµ÷ĞĞÊı
-                onClose: null, //¹Ø±ÕÄ£Ì¬¿òºóµÄ»Øµ÷ĞĞÊı£¬´ËÊ±realTimeÎªfalse
-                onConfirm: null, //µã»÷ÓÒ±ßÈ·¶¨°´Å¥Ö´ĞĞµÄ»Øµ÷
-                inputReadOnly: true, //inputÊÇ·ñÖ»¶Á
-                toolbarTitle: 'ÇëÑ¡Ôñ',  //±êÌâ
-                toolbarCloseText: 'È·¶¨'  //¹Ø±Õ°´Å¥ÎÄ°¸
+                cols: [], //åˆ—
+                atOnce: true,  //å®æ—¶æ˜¾ç¤ºæ–‡æœ¬åŸŸä¸­çš„å€¼
+                suffix: true,  //æ—¶å€™æ˜¾ç¤ºåç¼€ï¼Œå¦‚æ—¥æœŸçš„å¹´æœˆæ—¥æ—¶åˆ†ç§’
+                onOpen: null, //æ‰“å¼€æ¨¡æ€æ¡†åçš„å›è°ƒè¡Œæ•°
+                onClose: null, //å…³é—­æ¨¡æ€æ¡†åçš„å›è°ƒè¡Œæ•°ï¼Œæ­¤æ—¶realTimeä¸ºfalse
+                onConfirm: null, //ç‚¹å‡»å³è¾¹ç¡®å®šæŒ‰é’®æ‰§è¡Œçš„å›è°ƒ
+                inputReadOnly: true, //inputæ˜¯å¦åªè¯»
+                toolbarTitle: 'è¯·é€‰æ‹©',  //æ ‡é¢˜
+                toolbarCloseText: 'ç¡®å®š'  //å…³é—­æŒ‰é’®æ–‡æ¡ˆ
             };
 
-            /*²ÎÊı*/
+            /*å‚æ•°*/
             var params = $.extend({}, defaults, options);  //console.log(params)
 
-            /*Í·²¿dom½á¹¹*/
+            /*å¤´éƒ¨domç»“æ„*/
             params.toolbarTpl = [
                 '<header class="tool-bar">', '<h1 class="title">' + params.toolbarTitle + '</h1>',
                 '<button class="close-picker">' + params.toolbarCloseText + '</button>', '</header>'
             ].join('');
 
-            self.initialized = false; //³õÊ¼»¯¹ı
-            self.opened = false; //Ä£Ì¬¿òÊÇ·ñÒÑ´ò¿ª
+            self.initialized = false; //åˆå§‹åŒ–è¿‡
+            self.opened = false; //æ¨¡æ€æ¡†æ˜¯å¦å·²æ‰“å¼€
             self.inline = false;
-            self.displayValue = params.value.concat() || [];    //×îÖÕÒªÏÔÊ¾µÄÖµÊı×é,concat±ÜÃâÒıÓÃ¸Ä±äÔ­Öµ
+            self.displayValue = params.value.concat() || [];    //æœ€ç»ˆè¦æ˜¾ç¤ºçš„å€¼æ•°ç»„,concaté¿å…å¼•ç”¨æ”¹å˜åŸå€¼
 
-            /*Ò³ÃæÔªËØ*/
+            /*é¡µé¢å…ƒç´ */
             var elements = {
                 body: $(document.body),
                 input: $(params.input) //input
             };
 
-            self.inline = elements.modal ? true : false;   //µ±Ç°Ä£Ì¬¿ò´æÔÚ
+            self.inline = elements.modal ? true : false;   //å½“å‰æ¨¡æ€æ¡†å­˜åœ¨
 
 
             /*=====================
@@ -116,15 +116,15 @@
              * =====================*/
 
             /*
-             * ÉèÖÃ²¼¾Ö£¬Ñ¡ÏîµÈ
-             * ÉèÖÃÁĞÔªËØ£¬Ğ´Èëdom
+             * è®¾ç½®å¸ƒå±€ï¼Œé€‰é¡¹ç­‰
+             * è®¾ç½®åˆ—å…ƒç´ ï¼Œå†™å…¥dom
              * */
             self.layout = function () {
-                var colsLen = params.value.length;    //³õÊ¼ÖµÊı×é³¤¶È
+                var colsLen = params.value.length;    //åˆå§‹å€¼æ•°ç»„é•¿åº¦
                 var arr = ['<div class="picker-modal modal-out" style="display:block">', params.toolbarTpl, '<div class="picker-items"><div class="picker-center-highlight"></div>'];
                 if (params.cols.length) {
                     $.each(params.cols, function (i, v) {
-                        if (colsLen && i > colsLen - 1) return false;      //°´ÕÕ³õÊ¼ÖµÉèÖÃÁĞ
+                        if (colsLen && i > colsLen - 1) return false;      //æŒ‰ç…§åˆå§‹å€¼è®¾ç½®åˆ—
                         arr.push('<div class="picker-items-col"><div class="picker-items-col-wrapper">');
                         $.each(v.values, function (m, n) {
                             var text = params.suffix && v.suffix ? n + v.suffix : n;
@@ -158,30 +158,30 @@
 
             }
 
-            /*´ò¿ªÄ£Ì¬¿ò*/
+            /*æ‰“å¼€æ¨¡æ€æ¡†*/
             self.open = function () {
 
                 if (!self.opened) {
                     self.initialized = true;
 
                     if (!self.inline) {
-                        elements.modal = $(self.layout()); //ÉèÖÃdom
+                        elements.modal = $(self.layout()); //è®¾ç½®dom
                         elements.cols = elements.modal.find('.picker-items-col');
 
-                        /*¹Ø±ÕºóµÄ»Øµ÷º¯Êı*/
+                        /*å…³é—­åçš„å›è°ƒå‡½æ•°*/
                         elements.modal.on('close', function () {
                             modalClose(this, function (input, res) {
                                 if (!params.atOnce && params.onClose) {
-                                    params.onClose.call(input, res);//¹Ø±ÕºóµÄ»Øµ÷º¯Êı
+                                    params.onClose.call(input, res);//å…³é—­åçš„å›è°ƒå‡½æ•°
                                 }
                             });
                         });
 
-                        /*µã»÷È·ÈÏ°´Å¥ºóµÄ»Øµ÷º¯Êı*/
+                        /*ç‚¹å‡»ç¡®è®¤æŒ‰é’®åçš„å›è°ƒå‡½æ•°*/
                         elements.modal.on('confirm', function () {
                             if (!params.atOnce && params.onConfirm) {
                                 modalClose(this, function (input, res) {
-                                    params.onConfirm.call(input, res);//µã»÷È·¶¨ºóµÄ»Øµ÷º¯Êı
+                                    params.onConfirm.call(input, res);//ç‚¹å‡»ç¡®å®šåçš„å›è°ƒå‡½æ•°
                                 });
                             } else {
                                 elements.modal.trigger('close');
@@ -191,7 +191,7 @@
                     }
 
                     $.each(elements.cols, function () {
-                        self.initCols(this); //³õÊ¼»¯ÁĞ
+                        self.initCols(this); //åˆå§‹åŒ–åˆ—
                     });
 
                     //console.log(elements.modal)
@@ -201,29 +201,29 @@
 
                 self.opened = true; //set flag
 
-                /*´ò¿ªºóµÄ»Øµ÷º¯Êı*/
+                /*æ‰“å¼€åçš„å›è°ƒå‡½æ•°*/
                 if (params.onOpen) params.onOpen();
 
 
             };
 
-            /*¹Ø±ÕÄ£Ì¬¿ò*/
+            /*å…³é—­æ¨¡æ€æ¡†*/
             self.close = function () {
                 if (!self.opened) return;
                 elements.modal.trigger('close');
             };
 
             /*
-             * ÆäËûµ÷Õû£¬ÈçÔÂ·İ¶ÔÓ¦µÄÌìÊı
+             * å…¶ä»–è°ƒæ•´ï¼Œå¦‚æœˆä»½å¯¹åº”çš„å¤©æ•°
              * */
             self.setValue = function () {
                 if (params.onChange) {
-                    params.onChange(params); //±ä¸üÖµ£¬Áª¶¯´¦Àí
+                    params.onChange(params); //å˜æ›´å€¼ï¼Œè”åŠ¨å¤„ç†
                 }
                 params.atOnce && self.showResult();
             };
 
-            /*input¸³Öµ*/
+            /*inputèµ‹å€¼*/
             self.showResult = function () {
                 var result = {value: self.displayValue};
                 var resultValue = params.formatValue ? params.formatValue(result) : result.value.join(' ');
@@ -232,39 +232,39 @@
             };
 
 
-            /*³õÊ¼»¯ÁĞ±í*/
+            /*åˆå§‹åŒ–åˆ—è¡¨*/
             self.initCols = function (ele) {
-                var defaultValue = elements.input.data('val') && M.DateStringToArr(elements.input.data('val')) || self.displayValue.length && self.displayValue || params.value; //Êı×é
+                var defaultValue = elements.input.data('val') && M.DateStringToArr(elements.input.data('val')) || self.displayValue.length && self.displayValue || params.value; //æ•°ç»„
 
                 var $this = $(ele), colIndex = elements.cols.index($this);
                 //console.log(colIndex)
 
                 var col = params.cols[colIndex];
-                col.value = defaultValue[colIndex] || col.values[0];     //³õÊ¼»¯Öµ
+                col.value = defaultValue[colIndex] || col.values[0];     //åˆå§‹åŒ–å€¼
 
-                col.container = $this; //ÁĞÈİÆ÷
+                col.container = $this; //åˆ—å®¹å™¨
                 col.wrapper = col.container.find('.picker-items-col-wrapper');
-                col.items = col.container.find('.picker-item'); //Ã¿Ò»ĞĞ
+                col.items = col.container.find('.picker-item'); //æ¯ä¸€è¡Œ
 
 
                 /*
-                 * ÉùÃ÷ĞèÒªÓÃµ½µÄ±äÁ¿
+                 * å£°æ˜éœ€è¦ç”¨åˆ°çš„å˜é‡
                  * */
-                var isTouched, isMoved, startY, currentY, movedY, startTranslate, currentTranslate; //ÍÏ¶¯ĞèÒªÓÃµ½µÄÆ«ÒÆÁ¿¼ÆËã
-                var colHeight, itemsHeight, itemHeight;   //¸ß¶È
-                var minTranslate, maxTranslate;   //·ÀÖ¹ÍÑ³öÈİÆ÷
+                var isTouched, isMoved, startY, currentY, movedY, startTranslate, currentTranslate; //æ‹–åŠ¨éœ€è¦ç”¨åˆ°çš„åç§»é‡è®¡ç®—
+                var colHeight, itemsHeight, itemHeight;   //é«˜åº¦
+                var minTranslate, maxTranslate;   //é˜²æ­¢è„±å‡ºå®¹å™¨
 
-                colHeight = col.container[0].offsetHeight;     //colÈİÆ÷¸ß¶È
-                itemHeight = col.items[0].offsetHeight;     //item¸ß¶È
+                colHeight = col.container[0].offsetHeight;     //colå®¹å™¨é«˜åº¦
+                itemHeight = col.items[0].offsetHeight;     //itemé«˜åº¦
                 itemsHeight = itemHeight * col.items.length;
 
-                minTranslate = colHeight / 2 + itemHeight / 2 - itemsHeight;  //ÏòÉÏÍÏ¶¯×î´óÆ«ÒÆÁ¿
-                maxTranslate = colHeight / 2 - itemHeight / 2;  //ÏòÏÂÍÏ¶¯×î´óÆ«ÒÆÁ¿
+                minTranslate = colHeight / 2 + itemHeight / 2 - itemsHeight;  //å‘ä¸Šæ‹–åŠ¨æœ€å¤§åç§»é‡
+                maxTranslate = colHeight / 2 - itemHeight / 2;  //å‘ä¸‹æ‹–åŠ¨æœ€å¤§åç§»é‡
 
 
                 /*
-                 * ³õÊ¼»¯¸ÃÁĞµÄÄ¬ÈÏÖµ
-                 * ÉèÖÃ¸ÃÁĞµÄÎ»ÖÃ
+                 * åˆå§‹åŒ–è¯¥åˆ—çš„é»˜è®¤å€¼
+                 * è®¾ç½®è¯¥åˆ—çš„ä½ç½®
                  * */
                 col.setColTranslate = function (val) {
                     var activeIndex = col.activeIndex = $.inArray(val, col.values);    //console.log('init activeIndex',activeIndex);
@@ -273,7 +273,7 @@
                     col.highlightItem(activeIndex, translateY);
                 };
 
-                /*Ñ¡Ïî¸ßÁÁ*/
+                /*é€‰é¡¹é«˜äº®*/
                 col.highlightItem = function (index, translate) {
                     if (!translate) translate = fnGetTranslate(col.wrapper[0], 'y');
                     if (!index) index = -Math.round((translate - maxTranslate) / itemHeight);  //touchmove
@@ -283,19 +283,19 @@
                     if (index >= col.items.length) index = col.items.length - 1;
 
                     //set values
-                    self.displayValue[colIndex] = col.value = col.values[index]; //´æ´¢×îÖÕÒªÏÔÊ¾µÄÖµ
+                    self.displayValue[colIndex] = col.value = col.values[index]; //å­˜å‚¨æœ€ç»ˆè¦æ˜¾ç¤ºçš„å€¼
 
                     //console.log(col.activeIndex,index)
                     if (col.activeIndex != index) col.activeIndex = index;
 
-                    /*Ñ¡ÖĞitem*/
+                    /*é€‰ä¸­item*/
                     col.items.eq(index).addClass('picker-selected').siblings().removeClass('picker-selected');
                 };
 
 
-                /*´¦Àí°ó¶¨ÊÂ¼ş
+                /*å¤„ç†ç»‘å®šäº‹ä»¶
                  * @param: action[String] on/off
-                 * on-°ó¶¨  off-½â°ó
+                 * on-ç»‘å®š  off-è§£ç»‘
                  * */
                 col.handleEvents = function (action) {
                     col.container[action]($.events.start, fnTouchStart);
@@ -305,10 +305,10 @@
 
 
                 /*
-                 * ±¸×¢£º
-                 * touchesÊÇµ±Ç°ÆÁÄ»ÉÏËùÓĞ´¥ÃşµãµÄÁĞ±í;
-                 * targetTouchesÊÇµ±Ç°¶ÔÏóÉÏËùÓĞ´¥ÃşµãµÄÁĞ±í;
-                 * changedTouchesÊÇÉæ¼°µ±Ç°ÊÂ¼şµÄ´¥ÃşµãµÄÁĞ±í¡£
+                 * å¤‡æ³¨ï¼š
+                 * touchesæ˜¯å½“å‰å±å¹•ä¸Šæ‰€æœ‰è§¦æ‘¸ç‚¹çš„åˆ—è¡¨;
+                 * targetTouchesæ˜¯å½“å‰å¯¹è±¡ä¸Šæ‰€æœ‰è§¦æ‘¸ç‚¹çš„åˆ—è¡¨;
+                 * changedTouchesæ˜¯æ¶‰åŠå½“å‰äº‹ä»¶çš„è§¦æ‘¸ç‚¹çš„åˆ—è¡¨ã€‚
                  * */
                 /*touch start*/
                 function fnTouchStart(e) {
@@ -330,13 +330,13 @@
                     currentY = e.type === 'touchmove' ? e.targetTouches ? e.targetTouches[0].pageY : e.originalEvent.targetTouches[0].pageY : e.pageY;
                     movedY = currentY - startY;
 
-                    //Æ«ÒÆÁ¿
+                    //åç§»é‡
                     currentTranslate = startTranslate + movedY;
                     //console.log('currentTranslate',currentTranslate);
-                    if (currentTranslate > maxTranslate) currentTranslate = maxTranslate + itemHeight / 2; //ÏòÏÂÀ­È¡·¶Î§
-                    if (currentTranslate < minTranslate) currentTranslate = minTranslate - itemHeight / 2; //ÏòÉÏÀ­È¡·¶Î§
+                    if (currentTranslate > maxTranslate) currentTranslate = maxTranslate + itemHeight / 2; //å‘ä¸‹æ‹‰å–èŒƒå›´
+                    if (currentTranslate < minTranslate) currentTranslate = minTranslate - itemHeight / 2; //å‘ä¸Šæ‹‰å–èŒƒå›´
 
-                    //»¬¶¯
+                    //æ»‘åŠ¨
                     fnTranslate(col.wrapper, currentTranslate, 200);
                     col.highlightItem(null, currentTranslate);
 
@@ -346,31 +346,31 @@
                 function fnTouchEnd(e) {
                     //console.log('fnTouchEnd')
                     isTouched = isMoved = false;
-                    //Æ«ÒÆÁ¿
-                    currentTranslate = Math.round(currentTranslate / itemHeight) * itemHeight; //ËÄÉáÎåÈë
-                    if (currentTranslate > maxTranslate) currentTranslate = maxTranslate; //ÏòÏÂÀ­È¡·¶Î§
-                    if (currentTranslate < minTranslate) currentTranslate = minTranslate; //ÏòÉÏÀ­È¡·¶Î§
+                    //åç§»é‡
+                    currentTranslate = Math.round(currentTranslate / itemHeight) * itemHeight; //å››èˆäº”å…¥
+                    if (currentTranslate > maxTranslate) currentTranslate = maxTranslate; //å‘ä¸‹æ‹‰å–èŒƒå›´
+                    if (currentTranslate < minTranslate) currentTranslate = minTranslate; //å‘ä¸Šæ‹‰å–èŒƒå›´
 
-                    //»¬¶¯
+                    //æ»‘åŠ¨
                     fnTranslate(col.wrapper, currentTranslate, 200);
-                    self.setValue(); //ÖØĞÂ¶¨Î»Öµ
+                    self.setValue(); //é‡æ–°å®šä½å€¼
 
                 }
 
 
-                /*Ñ¡ÖĞÄ¬ÈÏÖµ*/
+                /*é€‰ä¸­é»˜è®¤å€¼*/
                 col.setColTranslate(col.value);
 
-                /*°ó¶¨ÊÂ¼ş*/
+                /*ç»‘å®šäº‹ä»¶*/
                 col.handleEvents('on');
 
             };
 
 
             /*
-             * Function ¹ı¶É
-             * @param ele Ä¿±êÔªËØ
-             * @param duration ¹ı¶ÉÖ´ĞĞÊ±¼ä
+             * Function è¿‡æ¸¡
+             * @param ele ç›®æ ‡å…ƒç´ 
+             * @param duration è¿‡æ¸¡æ‰§è¡Œæ—¶é—´
              * */
             function fnTransition(ele, duration) {
                 var _style = 'all ' + (duration || 0) + 'ms linear';
@@ -381,13 +381,13 @@
             }
 
             /*
-             * Function Æ«ÒÆ
-             * @param ele Ä¿±êÔªËØ
-             * @param offset Æ«ÒÆÁ¿
-             * @param duration ¹ı¶ÉÖ´ĞĞÊ±¼ä
+             * Function åç§»
+             * @param ele ç›®æ ‡å…ƒç´ 
+             * @param offset åç§»é‡
+             * @param duration è¿‡æ¸¡æ‰§è¡Œæ—¶é—´
              * */
             function fnTranslate(ele, offset, duration) {
-                // ÔÚ webkit-transformsÓÃ translate3d µÄ¶¯»­»áµÃµ½Ó²¼ş¼ÓËÙ,ĞÔÄÜÏÔÖøÌá¸ß
+                // åœ¨ webkit-transformsç”¨ translate3d çš„åŠ¨ç”»ä¼šå¾—åˆ°ç¡¬ä»¶åŠ é€Ÿ,æ€§èƒ½æ˜¾è‘—æé«˜
                 var _style = 'translate3d(0,' + (offset || 0) + 'px,0)';
                 ele.css({
                     '-webkit-transform': _style,
@@ -398,26 +398,26 @@
 
 
             /*
-             * »ñÈ¡Æ«ÒÆÁ¿
-             * @param ele Ä¿±êÔªËØ
-             * @param axis Öá£¨x/y£©
+             * è·å–åç§»é‡
+             * @param ele ç›®æ ‡å…ƒç´ 
+             * @param axis è½´ï¼ˆx/yï¼‰
              * */
             function fnGetTranslate(ele, axis) {
-                //²»Í¬µÄä¯ÀÀÆ÷¹À¼Æ»áÓĞ²»Í¬µÄ´¦Àí·½Ê½,´Ë´¦Áô¿Ó¡£¡£¡£
+                //ä¸åŒçš„æµè§ˆå™¨ä¼°è®¡ä¼šæœ‰ä¸åŒçš„å¤„ç†æ–¹å¼,æ­¤å¤„ç•™å‘ã€‚ã€‚ã€‚
                 /*
                  * curStyle.transform
-                 * ÉèÖÃ  -webkit-transform: translate3d(10px,-100px,-5px);
-                 * µÃµ½¾ØÕó×Ö·û´® matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 10, -100, -5, 1)
-                 * ÉèÖÃ  -webkit-transform: translate3d(0,-100px,0);
-                 * µÃµ½¾ØÕó×Ö·û´® matrix(1, 0, 0, 1, 0, -100)
+                 * è®¾ç½®  -webkit-transform: translate3d(10px,-100px,-5px);
+                 * å¾—åˆ°çŸ©é˜µå­—ç¬¦ä¸² matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 10, -100, -5, 1)
+                 * è®¾ç½®  -webkit-transform: translate3d(0,-100px,0);
+                 * å¾—åˆ°çŸ©é˜µå­—ç¬¦ä¸² matrix(1, 0, 0, 1, 0, -100)
                  * */
                 var matrix, curTransform, curStyle, transformMatrix;
 
-                if (typeof axis === 'undefined') axis = 'x';   //Ä¬ÈÏÎªxÖá
+                if (typeof axis === 'undefined') axis = 'x';   //é»˜è®¤ä¸ºxè½´
 
-                curStyle = window.getComputedStyle(ele, null); // »ñÈ¡ÑùÊ½¶ÔÏó.
+                curStyle = window.getComputedStyle(ele, null); // è·å–æ ·å¼å¯¹è±¡.
                 if (window.WebKitCSSMatrix) {
-                    //WebKitCSSMatrix ÊÇWebKitÄÚºËÌá¹©¿É¼ÆËãtransformµÄ·½·¨. ÆäËûÖ§³ÖHTML5µÄä¯ÀÀÆ÷Ò²ÓĞ¸÷×ÔµÄ·½·¨.
+                    //WebKitCSSMatrix æ˜¯WebKitå†…æ ¸æä¾›å¯è®¡ç®—transformçš„æ–¹æ³•. å…¶ä»–æ”¯æŒHTML5çš„æµè§ˆå™¨ä¹Ÿæœ‰å„è‡ªçš„æ–¹æ³•.
                     transformMatrix = new WebKitCSSMatrix(curStyle.webkitTransform === 'none' ? '' : curStyle.webkitTransform);
                     curTransform = (axis === 'x') ? transformMatrix.m41 : transformMatrix.m42;
                 } else {
@@ -439,7 +439,7 @@
             }
 
 
-            /*³õÊ¼»¯*/
+            /*åˆå§‹åŒ–*/
             if (params.inputReadOnly) elements.input.attr('readonly', true);
 
             /*
@@ -498,16 +498,16 @@
     ;
     (function ($) {
         "use strict";
-        /*Ä¬ÈÏ²ÎÊı*/
+        /*é»˜è®¤å‚æ•°*/
         var defaults = {
-            format: 'yyyy-MM-dd hh:mm', //ÈÕÆÚ×Ö·û´®¸ñÊ½
-            value: [],  //Ä¬ÈÏÖµ£¬Èç£º['2015', '12', '29', '19', '15']
-            yearLimit: [1950, 2030], //Äê·İ·¶Î§
-            level: 5,  //ÈÕÆÚÄ¬ÈÏ¿ÉÑ¡²ã¼¶
+            format: 'yyyy-MM-dd hh:mm', //æ—¥æœŸå­—ç¬¦ä¸²æ ¼å¼
+            value: [],  //é»˜è®¤å€¼ï¼Œå¦‚ï¼š['2015', '12', '29', '19', '15']
+            yearLimit: [1950, 2030], //å¹´ä»½èŒƒå›´
+            level: 5,  //æ—¥æœŸé»˜è®¤å¯é€‰å±‚çº§
             onChange: function (params) {
-                var days = M.getDaysByYearAndMonth(params.cols[0].value, params.cols[1].value);   //µ±ÔÂÌìÊı
+                var days = M.getDaysByYearAndMonth(params.cols[0].value, params.cols[1].value);   //å½“æœˆå¤©æ•°
                 var currentValue = params.cols[2].value;
-                if (currentValue > days) currentValue = days.toString(); //ÈÕ
+                if (currentValue > days) currentValue = days.toString(); //æ—¥
                 params.cols[2].value = currentValue;
                 params.cols[2].setColTranslate(currentValue);
             },
@@ -516,41 +516,41 @@
             }
         };
 
-        /*µ±Ç°Ê±¼ä*/
-        defaults.value = M.DateStringToArr();   //Ä¬ÈÏÎªµ±Ç°Ê±¼ä
+        /*å½“å‰æ—¶é—´*/
+        defaults.value = M.DateStringToArr();   //é»˜è®¤ä¸ºå½“å‰æ—¶é—´
         //console.log(defaults.value)
 
-        /*ĞèÒªÏÔÊ¾µÄÁĞÊı*/
+        /*éœ€è¦æ˜¾ç¤ºçš„åˆ—æ•°*/
         defaults.cols = [
             {
-                /*Äê·İ·¶Î§*/
+                /*å¹´ä»½èŒƒå›´*/
                 values: M.makeArr(defaults.yearLimit[1], defaults.yearLimit[0]),
-                suffix: 'Äê'
+                suffix: 'å¹´'
             },
             {
-                /*1-12ÔÂ·İ*/
+                /*1-12æœˆä»½*/
                 values: M.makeArr(12, 1),
-                suffix: 'ÔÂ'
+                suffix: 'æœˆ'
             },
             {
-                /*1-31ÈÕ*/
+                /*1-31æ—¥*/
                 values: M.makeArr(31, 1),
-                suffix: 'ÈÕ'
+                suffix: 'æ—¥'
             },
             {
-                /*24Ê±*/
+                /*24æ—¶*/
                 values: M.makeArr(23),
-                suffix: 'Ê±'
+                suffix: 'æ—¶'
             },
             {
-                /*60·Ö*/
+                /*60åˆ†*/
                 values: M.makeArr(59),
-                suffix: '·Ö'
+                suffix: 'åˆ†'
             },
             {
-                /*60Ãë*/
+                /*60ç§’*/
                 values: M.makeArr(59),
-                suffix: 'Ãë'
+                suffix: 'ç§’'
             }
         ];
 
@@ -565,18 +565,18 @@
                 var method = $this[0].tagName.toLowerCase() === 'input' ? 'val' : 'text';
 
                 /*
-                 * ³õÊ¼»¯ÈÕÆÚparams.valueÓÅÏÈ¼¶Îª
+                 * åˆå§‹åŒ–æ—¥æœŸparams.valueä¼˜å…ˆçº§ä¸º
                  * option.value > data('val') > val()/text() > default.value
                  * */
                 if (options && options.value) {
                     $this[method](M.formatDate(options.value, params.format));
                 } else {
                     var dateStr = $this.data('val') || $this[method]();  //dateStr = '';
-                    dateStr = $.trim(dateStr); //È¥µôÊ×Î»¿Õ°××Ö·û
+                    dateStr = $.trim(dateStr); //å»æ‰é¦–ä½ç©ºç™½å­—ç¬¦
                     if (dateStr) params.value = M.DateStringToArr(dateStr);
                 }
 
-                //´¦ÀídateArr
+                //å¤„ç†dateArr
                 params.value = Array.prototype.slice.call(params.value, 0, params.level); //console.log(params.value)
 
                 $this.picker(params);
