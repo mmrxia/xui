@@ -1,16 +1,16 @@
 /*picker modal
-* ×Ü¸ßÎª216px£¬±êÌâÎª36px£¬Ñ¡ÏîÎª180px
-* Ñ¡ÏîÁÐÏÔÊ¾5ÁÐ
+* æ€»é«˜ä¸º216pxï¼Œæ ‡é¢˜ä¸º36pxï¼Œé€‰é¡¹ä¸º180px
+* é€‰é¡¹åˆ—æ˜¾ç¤º5åˆ—
 */
 .picker-modal{position:fixed;bottom:0;left:0;z-index:9999;display:none;width:100%;height:216px;background:#fff;-webkit-transform:translate3d(0,100%,0);transform:translate3d(0,100%,0);}
 .picker-modal.modal-in,.picker-modal.modal-out{-webkit-transition-duration:400ms;transition-duration:400ms}
 
-/*modalÈë³¡*/
+/*modalå…¥åœº*/
 .picker-modal.modal-in{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}
-/*modalÍË³¡*/
+/*modalé€€åœº*/
 .picker-modal.modal-out{-webkit-transform:translate3d(0,100%,0);transform:translate3d(0,100%,0)}
 
-/*±êÌâ*/
+/*æ ‡é¢˜*/
 .picker-modal .tool-bar{-webkit-flex-shrink:0;flex-shrink:0;border-bottom: 1px solid #dcdcdc;}
 .picker-modal .title{position:static;margin:0;padding:0;background-color:#fff;color:#666;text-align:center;white-space:nowrap;font-weight:500;font-size:14px;height:36px;line-height:36px}
 .picker-modal .tool-bar .close-picker{position:absolute;top:0;right:0;padding:0 20px;height:auto;outline:0;border:0;background-color:#fff;color:#3BBC9C;font-size:14px;line-height:36px;cursor:pointer}
@@ -18,11 +18,11 @@
 /*inner items*/
 .picker-items{padding: 0 5px;position:relative;height: 180px;display:-webkit-box;display:-webkit-flex;display:flex;text-align:center;font-size:16px;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-mask-box-image:-webkit-linear-gradient(bottom,transparent,transparent 5%,#fff 20%,#fff 80%,transparent 95%,transparent);-webkit-mask-box-image:linear-gradient(to top,transparent,transparent 5%,#fff 20%,#fff 80%,transparent 95%,transparent)}
 
-/*ÁÐ*/
+/*åˆ—*/
 .picker-items-col{position:relative;overflow: hidden;max-height: 100%;cursor: pointer;-webkit-box-flex: 1;-webkit-flex: 1;flex:1;}
 .picker-items-col-wrapper{-webkit-transition:300ms ease-out;transition:300ms ease-out;}
 
-/*Ñ¡Ïî*/
+/*é€‰é¡¹*/
 .picker-item{position:relative;top:0;left:0;overflow:hidden;box-sizing:border-box;width:100%;height:36px;color:#777;text-overflow:ellipsis;white-space:nowrap;line-height:36px;}
 .picker-item.picker-selected{color:#3BBC9D}
 .picker-center-highlight{position:absolute;top:50%;left:0;margin-top:-18px;width:100%;height:36px;border-top: 1px solid #dcdcdc;border-bottom: 1px solid #dcdcdc;}

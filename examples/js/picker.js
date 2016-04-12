@@ -396,6 +396,7 @@
             $(window).off().on($.events.click, fnOnHtmlClick);
             elements.input.off().on($.events.click, function (e) {
                 e.stopPropagation();
+                if ($(this).hasClass('disabled')) return false;
                 if (!self.opened) {
                     var modal = $('.picker-modal.modal-in');
                     modal.trigger('close');
