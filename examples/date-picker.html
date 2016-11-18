@@ -14,66 +14,76 @@
     <script src="js/picker.js"></script>
 </head>
 <body>
-    <div class="page">
-        <header class="bar bar-nav">
-            <h1 class='title'>时间日期选择</h1>
-        </header>
-        <div class="content">
-            <div class="content-block">
-                <div class="list-block">
-                    <ul>
-                        <li>
-                            <div class="item-content">
-                                <div class="item-inner">
-                                    <div class="item-title label">时间日期</div>
-                                    <div class="item-input">
-                                        <!--日期输入目标容器-->
-                                        <input type="text" placeholder="请选择日期" id='datetime-picker' readonly />
-                                        <input type="text" placeholder="请选择日期" id='datetime-picker-2' value="2015/12/12 12:00" readonly />
-                                        <input type="text" placeholder="请选择日期" id='datetime-picker-1' readonly />
-                                    </div>
+<div class="page">
+    <header class="bar bar-nav">
+        <h1 class='title'>时间日期选择</h1>
+    </header>
+    <div class="content">
+        <div class="content-block">
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">时间日期</div>
+                                <div class="item-input">
+                                    <!--日期输入目标容器-->
+                                    <input type="text" placeholder="请选择日期" id='datetime-picker' readonly />
+                                    <input type="text" placeholder="请选择日期" id='datetime-picker-2' value="2015/12/12 12:00" readonly />
+                                    <input type="text" placeholder="请选择日期" id='datetime-picker-1' readonly />
                                 </div>
                             </div>
-                        </li>
-                        <li>
-                            <div class="item-content">
-                                <div class="item-inner">
-                                    <div class="item-title label">时间日期</div>
-                                    <div class="item-input">
-                                        <h3 id='datetime-picker-3'>2015/12/12</h3>
-                                    </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">时间日期</div>
+                                <div class="item-input">
+                                    <h3 id='datetime-picker-3'>2015/12/12</h3>
                                 </div>
                             </div>
-                        </li>
-                    </ul>
-                </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">原生日期控件:</div>
+                                <div class="item-input">
+                                    <input type="date" placeholder="请选择日期" value="2016-11-18" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        $(function () {
-            $("#datetime-picker,#datetime-picker-2").datetimePicker();
-            $("#datetime-picker-1").datetimePicker({
-                format: 'yyyy/MM/dd',   //最终要返回的日期字符串格式
-                level: 3,    //日期默认可选层级
-                atOnce: false,      //实时显示文本域中的值
-                onConfirm: function (res) {
-                    console.log("confirm", res)
-                    res.input.val(res.string);
-                }
-            });
-            $("#datetime-picker-3").datetimePicker({
-                format: 'yyyy/MM/dd',   //最终要返回的日期字符串格式
-                level: 3,    //日期默认可选层级
-                atOnce: false,      //实时显示文本域中的值
-                onClose: function (res) {
-                    console.log('close', res)
-                    res.input.text(res.string);
-                }
-            });
-        })
-    </script>
+<script>
+    $(function () {
+        $("#datetime-picker,#datetime-picker-2").datetimePicker();
+        $("#datetime-picker-1").datetimePicker({
+            format: 'yyyy/MM/dd',   //最终要返回的日期字符串格式
+            level: 3,    //日期默认可选层级
+            atOnce: false,      //实时显示文本域中的值
+            onConfirm: function (res) {
+                console.log("confirm", res)
+                res.input.val(res.string);
+            }
+        });
+        $("#datetime-picker-3").datetimePicker({
+            format: 'yyyy/MM/dd',   //最终要返回的日期字符串格式
+            level: 3,    //日期默认可选层级
+            atOnce: false,      //实时显示文本域中的值
+            onClose: function (res) {
+                console.log('close', res)
+                res.input.text(res.string);
+            }
+        });
+    })
+</script>
 
 </body>
 </html>
