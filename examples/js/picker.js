@@ -24,11 +24,14 @@
     var Picker = function (options) {
         var self = this;
         var defaults = {
+            container: null,  //模态框结构插入容器
             cols: [], //列
             atOnce: true,  //实时显示文本域中的值
-            suffix: true,  //时候显示后缀，如日期的年月日时分秒
-            onOpen: null, //打开模态框后的回调行数
-            onClose: null, //关闭模态框后的回调行数，此时realTime为false
+            appear: false, //初始化完直接显示
+            affix: false, //是否一直保持打开固定在页面上显示
+            suffix: true,  //列表是否显示后缀，如日期的年月日时分秒
+            onOpen: null, //打开模态框后的回调函数
+            onClose: null, //关闭模态框后的回调函数，此时atOnce为false
             onConfirm: null, //点击右边确定按钮执行的回调
             inputReadOnly: true, //input是否只读
             toolbarTitle: '请选择',  //标题
@@ -41,7 +44,7 @@
         /*头部dom结构*/
         params.toolbarTpl = [
             '<header class="tool-bar">', '<h1 class="title">' + params.toolbarTitle + '</h1>',
-            '<button class="close-picker">' + params.toolbarCloseText + '</button>', '</header>'
+            '<button class="confirm-picker">' + params.toolbarCloseText + '</button>', '</header>'
         ].join('');
 
         self.initialized = false; //初始化过
@@ -81,7 +84,7 @@
                 });
                 arr.push('</div></div>');
             }
-            return $(arr.join('')).appendTo(elements.body);
+            return $(arr.join('')).appendTo(params.container || elements.body);
         };
 
         function modalClose(modal, callback) {
@@ -107,7 +110,6 @@
 
         /*打开模态框*/
         self.open = function () {
-
             if (!self.opened) {
                 self.initialized = true;
 
@@ -188,7 +190,6 @@
 
             var col = params.cols[colIndex];
             col.value = defaultValue[colIndex] || col.values[0];     //初始化值
-
             col.container = $this; //列容器
             col.wrapper = col.container.find('.picker-items-col-wrapper');
             col.items = col.container.find('.picker-item'); //每一行
@@ -393,7 +394,6 @@
          * input onClick
          * */
         if (!self.inline) {
-            $(window).off().on($.events.click, fnOnHtmlClick);
             elements.input.off().on($.events.click, function (e) {
                 e.stopPropagation();
                 if ($(this).hasClass('disabled')) return false;
@@ -401,8 +401,14 @@
                     var modal = $('.picker-modal.modal-in');
                     modal.trigger('close');
                     self.open();
+
+                    $(window).off().on($.events.click, params.affix ? null : fnOnHtmlClick);
                 }
             });
+
+            if(params.appear){
+                elements.input.trigger($.events.click);
+            }
         }
 
     };
@@ -411,9 +417,13 @@
     /*========================
      * bind events
      * =======================*/
-    $(document).off().on($.events.click, '.close-picker', function () {
+    $(document).off().on($.events.click, '.confirm-picker, .close-picker', function () {
         var modal = $('.picker-modal.modal-in');
-        modal.trigger('confirm');
+        if($(this).is('.close-picker')){
+            modal.trigger('close');
+        }else{
+            modal.trigger('confirm');
+        }
     });
 
 
@@ -486,7 +496,7 @@
             return format;
         },
         DateStringToArr: function (str) {
-            var date = str ? new Date(str) : new Date();
+            var date = str && !isNaN(+new Date(str))? new Date(str) : new Date();
             return $.map([date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes()], function (item, index) {
                 return M.zeroFixed(item);
             });
