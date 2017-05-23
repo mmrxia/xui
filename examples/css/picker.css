@@ -13,7 +13,9 @@
 /*标题*/
 .picker-modal .tool-bar{-webkit-flex-shrink:0;flex-shrink:0;border-bottom: 1px solid #dcdcdc;}
 .picker-modal .title{position:static;margin:0;padding:0;background-color:#fff;color:#666;text-align:center;white-space:nowrap;font-weight:500;font-size:14px;height:36px;line-height:36px}
-.picker-modal .tool-bar .close-picker{position:absolute;top:0;right:0;padding:0 20px;height:auto;outline:0;border:0;background-color:#fff;color:#3BBC9C;font-size:14px;line-height:36px;cursor:pointer}
+.picker-modal .tool-bar .close-picker,.picker-modal .tool-bar .confirm-picker{position:absolute;top:0;padding:0 20px;height:auto;outline:0;border:0;background-color:#fff;color:#3BBC9C;font-size:14px;line-height:36px;cursor:pointer}
+.picker-modal .tool-bar .confirm-picker{right:0}
+.picker-modal .tool-bar .close-picker{left:0}
 
 /*inner items*/
 .picker-items{padding: 0 5px;position:relative;height: 180px;display:-webkit-box;display:-webkit-flex;display:flex;text-align:center;font-size:16px;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-mask-box-image:-webkit-linear-gradient(bottom,transparent,transparent 5%,#fff 20%,#fff 80%,transparent 95%,transparent);-webkit-mask-box-image:linear-gradient(to top,transparent,transparent 5%,#fff 20%,#fff 80%,transparent 95%,transparent)}
