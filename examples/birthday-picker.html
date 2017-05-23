@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>生日选择</title>
+    <meta name="format-detection" content="telephone=no,email=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-status-bar-style" content="white"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <style>
+        ul{list-style: none;padding: 0;margin: 0;}
+        .birthday .title{color: #666;}
+        .birthday input{width: 200px;padding: 6px 10px;border:1px solid #f0f0f0;color: #333;font-size:14px;}
+
+        .picker {position: relative;opacity: 0;visibility: hidden;transition: all .4s ease;}
+        .picker.in {opacity: 1;visibility: visible;}
+        .picker .mask{background: rgba(0, 0, 0, 0.65);position: fixed;top:0;right:0;bottom:0;left:0;z-index: 10;}
+        .picker .body{position: fixed;width:100%;top:50%;left: 50%;transform: translate3d(-50%,-50%, 0);z-index: 11;}
+        .picker .body ul{overflow: auto;text-align: center}
+        .picker .body ul li{position:relative;padding: 5px 20px 5px 5px;margin: 0 5px;display:inline-block;background-image: linear-gradient(#A0DD83, #89B5B7);width: 60px;text-align: center;}
+        .picker .body ul li:after{display:block;content: '';width: 0;height: 0;position:absolute;right:6px;top:50%;transform: translateY(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top: 5px solid #333;}
+    </style>
+    <script src="../static/js/jquery.min.js"></script>
+</head>
+<body>
+    <ul>
+        <li class="birthday">
+            <span class="title">生日：</span>
+            <input class="j-birth-picker" type="text" value="2017年5月23日" readonly>
+        </li>
+    </ul>
+
+    <div class="modal picker">
+        <div class="mask"></div>
+        <div class="body">
+            <ul>
+                <li>2017</li>
+                <li>05</li>
+                <li>26</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+
+            new BirthPicker({
+                trigger: $('.j-birth-picker')
+            })
+        });
+
+        function BirthPicker(options) {
+            this.defaults = {
+                trigger: null,
+                date: 1495521994511
+            };
+
+            this.params = $.extend({}, this.defaults, options);
+
+            this.init();
+        }
+
+        BirthPicker.prototype.init = function () {
+            var _this = this;
+            $(this.params.trigger).on('click', function () {
+                _this.open();
+            });
+
+            $('.picker ul li').on('click', function () {
+                this.confirm();
+            });
+        };
+        BirthPicker.prototype.open = function () {
+            $('.picker').addClass('in');
+        };
+
+        BirthPicker.prototype.close = function () {
+            $('.picker').removeClass('in');
+        };
+
+        BirthPicker.prototype.confirm = function () {
+
+        }
+
+
+
+
+    </script>
+</body>
+</html>
